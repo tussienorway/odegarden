@@ -1,24 +1,10 @@
-/* Ekte bilder fra odegardens.no. Legg til nye: {src, kat, navn} */
+/* Ekte bilder fra odegardens.no. Legg til nye: {src, kat, navn}.
+   Maskinbilder med uavklarte rettigheter er tatt ut (se odegarden-admin/docs). */
 window.GALLERI = [
 {
 "src": "img/ekte/4_.webp",
 "kat": "anleggsgartner",
 "navn": "Anleggsgartner"
-},
-{
-"src": "img/ekte/Hanomag_55D_02.webp",
-"kat": "broyting",
-"navn": "Brøyting"
-},
-{
-"src": "img/ekte/John_Deere_6930-_snow_plough-_Matlock.webp",
-"kat": "broyting",
-"navn": "Brøyting"
-},
-{
-"src": "img/ekte/Terex-tl100-c47db5d4.webp",
-"kat": "broyting",
-"navn": "Brøyting"
 },
 {
 "src": "img/ekte/anleggsgartner-bark-lossteins-mur-og-planter.webp",
@@ -149,11 +135,6 @@ window.GALLERI = [
 "src": "img/ekte/brukt-stilkroser-queen-elisabeth.webp",
 "kat": "hagesenter",
 "navn": "Hagesenter"
-},
-{
-"src": "img/ekte/deutz_k.webp",
-"kat": "broyting",
-"navn": "Brøyting"
 },
 {
 "src": "img/ekte/fra-vart-plantefelt.webp",
@@ -316,11 +297,6 @@ window.GALLERI = [
 "navn": "Hagesenter"
 },
 {
-"src": "img/ekte/mccormickcx85.webp",
-"kat": "broyting",
-"navn": "Brøyting"
-},
-{
 "src": "img/ekte/odegardens-1-876-ii.webp",
 "kat": "hagesenter",
 "navn": "Hagesenter"
@@ -351,7 +327,7 @@ window.GALLERI = [
 "navn": "Planteskole"
 },
 {
-"src": "img/ekte/planteskolen-store-trer-konflikt-for-unicode-koding.webp",
+"src": "img/ekte/planteskole-store-traer-bergemoen.webp",
 "kat": "planteskole",
 "navn": "Planteskole"
 },
@@ -359,15 +335,5 @@ window.GALLERI = [
 "src": "img/ekte/sommer-pa-langhaveheia-048-800.webp",
 "kat": "anleggsgartner",
 "navn": "Anleggsgartner"
-},
-{
-"src": "img/ekte/valmet905.webp",
-"kat": "broyting",
-"navn": "Brøyting"
-},
-{
-"src": "img/ekte/wille855c.webp",
-"kat": "broyting",
-"navn": "Brøyting"
 }
 ];

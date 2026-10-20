@@ -1,6 +1,6 @@
 (function(){
-const fab=document.createElement("button");fab.id="chat-fab";fab.setAttribute("aria-label","Åpne chat");fab.textContent="💬";
-const box=document.createElement("div");box.id="chat";box.innerHTML=`<div class="hd"><span>🌸 Digital sekretær<br><small style="font-weight:400;opacity:.85">Demo · KI klargjort, ikke aktivert</small></span><button aria-label="Lukk">×</button></div><div class="msgs"></div><div class="qr"></div><form><input placeholder="Skriv en melding…" aria-label="Melding"><button class="btn" style="padding:10px 16px">➤</button></form>`;
+const fab=document.createElement("button");fab.id="chat-fab";fab.setAttribute("aria-label","Få hjelp til forespørsel");fab.innerHTML='<svg class="i" aria-hidden="true"><use href="#i-chat"/></svg><span>Få hjelp</span>';
+const box=document.createElement("div");box.id="chat";box.innerHTML=`<div class="hd"><span>Hjelp til forespørsel<br><small class="disc">Automatisk assistent – svar kan være feil. Ring 37 04 31 02 for sikre svar.</small></span><button aria-label="Lukk">×</button></div><div class="msgs"></div><div class="qr"></div><form><input placeholder="Skriv en melding…" aria-label="Melding"><button class="btn" style="padding:10px 16px">➤</button></form>`;
 document.body.append(fab,box);
 const msgs=box.querySelector(".msgs"),qr=box.querySelector(".qr"),inp=box.querySelector("input"),hist=[];
 const add=(t,who)=>{const m=document.createElement("div");m.className="m "+who;m.textContent=t;msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;return m};
