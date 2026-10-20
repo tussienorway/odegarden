@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prosjekt og næring – Ødegårdens Planteskole og Utemiljø</title>
+<meta name="description" content="Forbered en forespørsel om anleggsgartnerarbeid, beplantning og drift av utearealer i Grimstad.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/style.css"><link rel="icon" href="favicon.ico">
+<script src="js/prosjekt.js" defer></script>
+</head>
+<body class="project-page">
+<a class="skip" href="#main">Hopp til innhold</a>
+<div class="demo-notice">Demoforslag – ikke bedriftens offisielle nettside. Skjemaet sender ingenting.</div>
+<header><nav class="wrap project-nav" aria-label="Hovedmeny">
+<a href="index.html"><img src="img/logo.svg" alt="Ødegården – forsiden" width="142" height="44"></a>
+<a href="hagesenter.html">Hagesenter</a><a href="anleggsgartner.html">Anleggsgartner</a>
+<a href="broyting.html">Brøyting og drift</a><a href="#foresporsel">Beskriv prosjektet</a>
+</nav></header>
+<main id="main">
+<section class="project-hero"><div class="wrap"><div>
+<span class="project-label">Prosjekt · Utemiljø · Vedlikehold</span>
+<h1>Gode uterom begynner med en god avklaring.</h1>
+<p>Planlegger dere et nytt uteområde, rehabilitering eller løpende vedlikehold? Samle det viktigste om oppdraget før dere tar kontakt.</p>
+<a class="btn alt" href="#foresporsel">Beskriv prosjektet</a>
+</div><img src="img/ekte/brukt-hjem-anleggsgartner-belegningsstein.webp" alt="Belegningsstein fra det eksisterende bildegalleriet" width="800" height="600"></div></section>
+<section><div class="wrap"><span class="kicker">For profesjonelle oppdragsgivere og private</span>
+<h2>Fra beplantning til ferdige utearealer</h2>
+<div class="grid g3">
+<article><h3>Anlegg og rehabilitering</h3><p>Belegningsstein, heller, murer, trapper og beplantning. Beskriv omfang og ønsket materialbruk.</p></article>
+<article><h3>Planter og grøntområder</h3><p>Trær, busker, hekk og plen. Oppgi areal, sted og hva dere ønsker å oppnå.</p></article>
+<article><h3>Drift gjennom året</h3><p>Vedlikehold, brøyting og strøing. Beskriv områdene og ønsket avtaleperiode.</p></article>
+</div><p class="note">Kapasitet, referanser, dokumentasjon og eventuelle kvalifikasjonskrav avklares direkte for det aktuelle oppdraget.</p>
+</div></section>
+<section class="stone" id="foresporsel"><div class="wrap grid g2">
+<div><span class="kicker">En ryddig start</span><h2>Hva skal dere få gjort?</h2>
+<p class="project-summary">Lag en kort prosjektbeskrivelse som du kan kopiere til en e-post. Det gjør det enklere å avklare omfang, fremdrift og behov for befaring.</p>
+<ul class="tick"><li>Oppgi sted og type arbeid.</li><li>Beskriv størrelse, adkomst og ønsket tidsrom.</li><li>Nevn tegninger eller bilder som finnes.</li></ul>
+<p>Ved formelle konkurranser følger innleveringen den angitte konkurranseportalen og fristen. Denne demoen er ikke en anbudsportal.</p>
+<p class="note">Ingenting sendes eller lagres av skjemaet. Du velger selv hvem du deler teksten med. Unngå fortrolige anbudsdokumenter og personopplysninger om andre.</p>
+<noscript><p>Skjemaet trenger JavaScript. Du kan i stedet skrive sted, omfang og ønsket tidsrom direkte i en e-post til bedriften.</p></noscript>
+</div>
+<div>
+<form id="project-form" class="project-form">
+<fieldset><legend>Oppdraget</legend><div class="fields">
+<label>Type arbeid *<select name="service" required><option value="">Velg type arbeid</option><option>Anlegg og rehabilitering</option><option>Beplantning og grøntområder</option><option>Drift og vedlikehold</option><option>Brøyting og strøing</option><option>Annet / sammensatt oppdrag</option></select></label>
+<label>Oppdragsgiver<select name="customer"><option>Bedrift / entreprenør</option><option>Borettslag / sameie</option><option>Offentlig virksomhet</option><option>Privatperson</option></select></label>
+<label>Sted / område *<input name="place" required maxlength="160" placeholder="For eksempel: Grimstad sentrum"></label>
+<label>Ønsket tidsrom<input name="timing" maxlength="120" placeholder="For eksempel: våren 2027"></label>
+<label class="wide">Kort om omfanget *<textarea name="scope" required rows="5" maxlength="3000" placeholder="Areal, ønsket arbeid, adkomst og eventuelle tegninger"></textarea></label>
+</div></fieldset>
+<fieldset><legend>Kontakt</legend><div class="fields">
+<label>Navn *<input name="name" required autocomplete="name" maxlength="100"></label>
+<label>Bedrift / organisasjon<input name="company" autocomplete="organization" maxlength="160"></label>
+<label class="wide">E-post eller telefon *<input name="contact" required maxlength="160" aria-describedby="contact-help"></label>
+<p class="note wide" id="contact-help">Oppgi en e-postadresse eller et norsk telefonnummer med åtte sifre.</p>
+</div></fieldset>
+<p id="project-error" role="alert" class="err"></p>
+<button class="btn" type="submit">Lag prosjektbeskrivelse</button>
+</form>
+<div id="project-output" class="project-output" hidden>
+<h3>Prosjektbeskrivelsen er klar</h3><p>Dette er et utkast. Ingenting er sendt.</p>
+<label for="project-text">Tekst til e-post</label><textarea id="project-text" rows="14" readonly></textarea>
+<div class="project-actions"><button class="btn" type="button" id="copy-project">Kopier teksten</button><button class="btn ghost" type="button" id="edit-project">Endre opplysninger</button></div>
+<p id="project-status" role="status"></p>
+</div>
+</div></div></section>
+</main>
+<footer><div class="wrap"><p><strong>Ødegårdens Planteskole og Utemiljø</strong></p>
+<p><a href="index.html#kontakt">Kontakt og besøk</a> · <a href="personvern.html">Personvern</a></p>
+<p>Demoforslag. Tjenester, kapasitet og leveranse avtales med bedriften.</p></div></footer>
+</body></html>
