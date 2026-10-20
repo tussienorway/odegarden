@@ -1,6 +1,6 @@
 # Bildeliste – Ødegården
 
-Lastet ned 20.10.2026 fra odegardens.no (forside og undersider, wp-content/uploads). Skalert til maks 1400 px. Duplikater er fjernet.
+Lastet ned 20.10.2026 fra odegardens.no (forside og undersider, wp-content/uploads). Konvertert til WebP (maks 1200 px, hero 1600 px) med miniatyrer i img/thumb/ (480×480). Originale JPG-er er fjernet fra nettsiden. Duplikater er fjernet.
 
 | Fil | Kategori | Merknad |
 |---|---|---|

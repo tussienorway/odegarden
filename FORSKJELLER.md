@@ -20,3 +20,12 @@
     - anbudsagent for offentlige oppdrag: ferdige Doffin-søk (drift parker, idrettsanlegg, grøntanlegg, brøyting, vintervedlikehold), liste over fulgte utlysninger, sjekkliste (HMS, kvalifikasjoner, beredskap for brøyting, driftsplan) og krok for automatisk overvåking
     - eier-rådgiver: leverandørtyper, innkjøps- og forhandlingstips, og prisrådgivning med egen minimumsmargin (alle tall «EKSEMPEL – ikke bekreftet»; kun i admin)
     - eksport og import av data
+
+## Kvalitetsløft (20.10.2026)
+16. **Ytelse**: alle bilder i WebP (galleri med egne 480 px miniatyrer), responsivt hero-bilde med preload, lazy-loading, videoer med `preload="none"` og plakatbilde, ingen eksterne fonter. Lighthouse lokalt: 99–100 i alle kategorier.
+17. **Sesonginnhold**: vår, sommer, høst og vinter, med gjeldende sesong markert automatisk.
+18. **«Åpent nå»-status** og åpningstider der dagens dag er uthevet.
+19. **Sticky ring-knapp på mobil** (tel:) og «Skriv»-snarvei.
+20. **Kart** (OpenStreetMap) som lastes først når kunden ber om det.
+21. **Tilgjengelighet**: skip-lenke, tydelig fokusmarkering, aria-merking, alt-tekster, slider med tastaturstyring og respekt for «redusert bevegelse».
+22. **SEO**: canonical, Open Graph, LocalBusiness/GardenStore JSON-LD (adresse, åpningstider, koordinater), sitemap.xml og robots.txt.

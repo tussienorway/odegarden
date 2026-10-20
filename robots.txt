@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /odegarden/admin.html
+Disallow: /admin.html
+Sitemap: https://tussienorway.github.io/odegarden/sitemap.xml

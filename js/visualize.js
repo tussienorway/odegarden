@@ -10,7 +10,7 @@ $("#vz-tiltak").innerHTML=TILTAK.map(t=>`<label><input type="checkbox" value="${
 $("#vz-mode").textContent=C.IMAGE_ENDPOINT?"KI-visualisering er aktiv.":"Demomodus: du får se et ferdig eksempel som ligner valget ditt. Bildet ditt forlater ikke nettleseren.";
 let dataURL=null;
 const load=f=>{if(!f||!f.type.startsWith("image/"))return toast("Velg en bildefil");const r=new FileReader();r.onload=()=>{dataURL=r.result;prev.src=dataURL;prev.style.display="block"};r.readAsDataURL(f)};
-drop.onclick=()=>file.click();file.onchange=()=>load(file.files[0]);
+drop.onclick=()=>file.click();drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click()}};file.onchange=()=>load(file.files[0]);
 ["dragover","dragenter"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add("hov")}));
 ["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("hov")}));
 drop.addEventListener("drop",e=>load(e.dataTransfer.files[0]));
@@ -27,14 +27,14 @@ async function generateVideo(img,tiltak){
   for(let i=0;!r.video&&r.jobId&&i<60;i++){await new Promise(s=>setTimeout(s,5000));r=await (await fetch(C.VIDEO_ENDPOINT+"?id="+encodeURIComponent(r.jobId))).json()}
   return r.video||null;
 }
-function slider(before,after,lab,ai,rl){return `<div class="ba"><img src="${after}" alt="Etter"><img class="before" src="${before}" alt="Før"><span class="lbl l">Før</span><span class="lbl r">${rl||"Etter"}</span><div class="line"></div><input type="range" min="0" max="100" value="50" aria-label="Før/etter">${ai?`<span class="ai">${ai}</span>`:""}</div><p class="note center">${lab}</p>`}
+function slider(before,after,lab,ai,rl){return `<div class="ba"><img src="${after}" alt="Etter"><img class="before" src="${before}" alt="Før"><span class="lbl l">Før</span><span class="lbl r">${rl||"Etter"}</span><div class="line"></div><input type="range" min="0" max="100" value="50" aria-label="Sammenlign før og etter">${ai?`<span class="ai">${ai}</span>`:""}</div><p class="note center">${lab}</p>`}
 function videoBlock(src){
   const w=document.createElement("div");w.innerHTML=`<video controls playsinline muted loop preload="metadata" src="${src}"></video><p class="note center">🎥 Rundtur rundt eiendommen</p>`;
   const v=w.querySelector("video");v.addEventListener("error",()=>{w.innerHTML=`<div class="slot" style="height:100%;display:grid;place-items:center">🎥<br><b>Video kommer snart</b><br><span class="note">Rundturvideoen er ikke klar ennå.</span></div>`});
   return w;
 }
 async function showDemo(n){
-  out.innerHTML=`<div>${slider(`assets/demo/demo-${n}-for.jpg`,`assets/demo/demo-${n}-etter.jpg`,"Eksempel: "+DEMO[n]+" – etterbildet er ekte arbeid fra Ødegården, førbildet er KI-generert","KI-generert førbilde","Etter · ekte arbeid")}</div>`;
+  out.innerHTML=`<div>${slider(`assets/demo/demo-${n}-for.webp`,`assets/demo/demo-${n}-etter.webp`,"Eksempel: "+DEMO[n]+" – etterbildet er ekte arbeid fra Ødegården, førbildet er KI-generert","KI-generert førbilde","Etter · ekte arbeid")}</div>`;
   window.bindSliders(out);if(C.DEMO_VIDEO)out.appendChild(videoBlock(C.DEMO_VIDEO));out.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 document.querySelectorAll("[data-demo]").forEach(b=>b.onclick=()=>showDemo(b.dataset.demo));

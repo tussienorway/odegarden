@@ -74,9 +74,9 @@ document.addEventListener("click",e=>{const t=e.target;
   if(t.dataset.rmu){Store.set("utlysninger",U().filter(x=>x.id!==t.dataset.rmu));renderKommune()}
   if(t.dataset.tilanb){const x=U().find(y=>y.id===t.dataset.tilanb),a=A();a.unshift({id:Store.id(),kunde:x.oppdragsgiver||"Offentlig oppdragsgiver",tittel:x.tittel,status:"bor",frist:x.frist,belop:0,offentlig:true});Store.set("anbud",a);toast("Lagt til i anbud");render()}});
 // data
-$("#d-exp").onclick=()=>{const d={};["foresporsler","anbud","kommune","utlysninger"].forEach(k=>d[k]=Store.get(k,null));const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:"application/json"}));a.download="steinli-data.json";a.click()};
+$("#d-exp").onclick=()=>{const d={};["foresporsler","anbud","kommune","utlysninger"].forEach(k=>d[k]=Store.get(k,null));const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:"application/json"}));a.download="odegarden-data.json";a.click()};
 $("#d-imp").onchange=e=>{const r=new FileReader();r.onload=()=>{const d=JSON.parse(r.result);Object.entries(d).forEach(([k,v])=>v!=null&&Store.set(k,v));render();toast("Importert")};r.readAsText(e.target.files[0])};
-$("#d-slett").onclick=()=>{if(confirm("Slette alle data i denne nettleseren?")){["foresporsler","anbud","kommune","utlysninger"].forEach(k=>localStorage.removeItem("steinli_"+k));render()}};
+$("#d-slett").onclick=()=>{if(confirm("Slette alle data i denne nettleseren?")){["foresporsler","anbud","kommune","utlysninger"].forEach(k=>localStorage.removeItem("odegarden_"+k));render()}};
 $("#d-eks").onclick=()=>{const p=n=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
   Store.addRequest({navn:"Eksempel: Ola Nordmann",tlf:"000 00 000",adresse:"Eksempelveien 1",tjeneste:"Natursteinsmur",beskrivelse:"EKSEMPELDATA – ca. 10 m mur langs innkjørsel",kilde:"eksempel"});
   const a=A();a.unshift({id:Store.id(),kunde:"Eksempel: Kari Hansen",tittel:"Belegningsstein innkjørsel (EKSEMPEL)",status:"bor",frist:p(3),belop:0},{id:Store.id(),kunde:"Eksempel: Per Olsen",tittel:"Skiferterrasse (EKSEMPEL)",status:"sendt",frist:p(-2),sendt:p(-5),belop:0});Store.set("anbud",a);
