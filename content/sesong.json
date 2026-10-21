@@ -1,0 +1,90 @@
+{
+  "maaneder": [
+    {
+      "maaned": 1,
+      "punkter": [
+        "Planlegg vårens hageprosjekt",
+        "Brøyting og strøing"
+      ]
+    },
+    {
+      "maaned": 2,
+      "punkter": [
+        "Beskjæring av frukttrær",
+        "Brøyting og strøing"
+      ]
+    },
+    {
+      "maaned": 3,
+      "punkter": [
+        "Frøsåing innendørs",
+        "Vårens første planter"
+      ]
+    },
+    {
+      "maaned": 4,
+      "punkter": [
+        "Trær, busker og hekk",
+        "Bark og jord til bedene"
+      ]
+    },
+    {
+      "maaned": 5,
+      "punkter": [
+        "Sommerblomster",
+        "Krukker og ampler"
+      ]
+    },
+    {
+      "maaned": 6,
+      "punkter": [
+        "Roser i blomst",
+        "Stauder"
+      ]
+    },
+    {
+      "maaned": 7,
+      "punkter": [
+        "Sommerblomster",
+        "Vanningstips"
+      ]
+    },
+    {
+      "maaned": 8,
+      "punkter": [
+        "Høstens første stauder",
+        "Hekk"
+      ]
+    },
+    {
+      "maaned": 9,
+      "punkter": [
+        "Høstlyng og krukker",
+        "Høstplanting av trær"
+      ]
+    },
+    {
+      "maaned": 10,
+      "punkter": [
+        "Blomsterløk for våren",
+        "Høstplanting av trær og hekk",
+        "Bark som vinterbeskyttelse",
+        "Brøyteavtale for vinteren"
+      ]
+    },
+    {
+      "maaned": 11,
+      "punkter": [
+        "Vinterbeskyttelse",
+        "Brøyteavtale"
+      ]
+    },
+    {
+      "maaned": 12,
+      "punkter": [
+        "Brøyting og strøing",
+        "Planlegg neste sesong"
+      ]
+    }
+  ]
+}
