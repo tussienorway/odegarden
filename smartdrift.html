@@ -42,7 +42,7 @@
       </div>
       <div class="sd-stat-card" style="border-top-color:#145c3a">
         <span class="note">Salgsklare partier</span>
-        <div class="sd-stat-val" id="lager-stat-salgsklar" style="color:#145c3a">6 partier</div>
+        <div class="sd-stat-val" id="lager-stat-salgsklar" style="color:#145c3a">8 partier</div>
         <small style="color:#5c554c">Klare for anbud og salg</small>
       </div>
       <div class="sd-stat-card" style="border-top-color:#cf2e2e">
@@ -59,22 +59,26 @@
 
     <!-- Hovedfaner -->
     <div class="sd-tabs" role="tablist" aria-label="SmartDrift Moduler">
-      <button class="sd-tab-btn active" role="tab" aria-selected="true" data-target="pane-lager">📦 1. Lager & Inventar</button>
-      <button class="sd-tab-btn" role="tab" aria-selected="false" data-target="pane-kart">🗺️ 2. Hva er plantet hvor & når</button>
-      <button class="sd-tab-btn" role="tab" aria-selected="false" data-target="pane-bestill">📅 3. Bestillingstidspunkt</button>
-      <button class="sd-tab-btn" role="tab" aria-selected="false" data-target="pane-leverandor">💰 4. Billigste Leverandør</button>
-      <button class="sd-tab-btn" role="tab" aria-selected="false" data-target="pane-ai">🧠 5. SuperGrok Driftsassistent</button>
+      <button class="sd-tab-btn active" role="tab" id="tab-lager" aria-selected="true" aria-controls="pane-lager" tabindex="0" data-target="pane-lager">📦 1. Lager & Inventar</button>
+      <button class="sd-tab-btn" role="tab" id="tab-kart" aria-selected="false" aria-controls="pane-kart" tabindex="-1" data-target="pane-kart">🗺️ 2. Hva er plantet hvor & når</button>
+      <button class="sd-tab-btn" role="tab" id="tab-bestill" aria-selected="false" aria-controls="pane-bestill" tabindex="-1" data-target="pane-bestill">📅 3. Bestillingstidspunkt</button>
+      <button class="sd-tab-btn" role="tab" id="tab-leverandor" aria-selected="false" aria-controls="pane-leverandor" tabindex="-1" data-target="pane-leverandor">💰 4. Billigste Leverandør</button>
+      <button class="sd-tab-btn" role="tab" id="tab-ai" aria-selected="false" aria-controls="pane-ai" tabindex="-1" data-target="pane-ai">🧠 5. SuperGrok Driftsassistent</button>
     </div>
 
     <!-- PANE 1: LAGER OG INVENTAR -->
-    <div class="sd-pane active" id="pane-lager" role="tabpanel">
+    <div class="sd-pane active" id="pane-lager" role="tabpanel" aria-labelledby="tab-lager">
       <div class="card pad" style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
           <div>
             <h2 style="margin:0">Levende lager & Løsvekt</h2>
             <p style="margin:4px 0 0;color:#5c554c;font-size:0.92rem">Sanntidsoversikt over kultiverte trær, hekk, vintergrønt og Reddal Sand-fraksjoner.</p>
           </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+            <div>
+              <label for="lager-filter-sok" class="note" style="display:block;margin-bottom:2px">Søk:</label>
+              <input id="lager-filter-sok" type="search" placeholder="F.eks. Lønn, Tuja, Bark…" style="padding:6px 12px;font-size:0.88rem;border-radius:8px;border:1px solid #ccc;min-width:160px">
+            </div>
             <div>
               <label for="lager-filter-kat" class="note" style="display:block;margin-bottom:2px">Kategori:</label>
               <select id="lager-filter-kat" style="padding:6px 12px;font-size:0.88rem;border-radius:8px">
@@ -120,7 +124,7 @@
     </div>
 
     <!-- PANE 2: PLANTEKART -->
-    <div class="sd-pane" id="pane-kart" role="tabpanel">
+    <div class="sd-pane" id="pane-kart" role="tabpanel" aria-labelledby="tab-kart">
       <div class="card pad" style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-bottom:1px solid #eee;padding-bottom:12px">
           <div>
@@ -146,7 +150,7 @@
     </div>
 
     <!-- PANE 3: BESTILLINGSTIDSPUNKT -->
-    <div class="sd-pane" id="pane-bestill" role="tabpanel">
+    <div class="sd-pane" id="pane-bestill" role="tabpanel" aria-labelledby="tab-bestill">
       <div class="grid g2">
         <div>
           <div class="card pad" style="margin-bottom:20px">
@@ -186,7 +190,7 @@
     </div>
 
     <!-- PANE 4: LEVERANDØRSAMMENLIGNING -->
-    <div class="sd-pane" id="pane-leverandor" role="tabpanel">
+    <div class="sd-pane" id="pane-leverandor" role="tabpanel" aria-labelledby="tab-leverandor">
       <div class="grid g2" style="align-items:start">
         <div id="leverandor-matrix">
           <!-- Fylles dynamisk -->
@@ -224,14 +228,37 @@
     </div>
 
     <!-- PANE 5: SUPERGROK CLAUDE DRIFTSASSISTENT -->
-    <div class="sd-pane" id="pane-ai" role="tabpanel">
+    <div class="sd-pane" id="pane-ai" role="tabpanel" aria-labelledby="tab-ai">
       <div class="card pad">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid #eee;padding-bottom:12px">
           <div>
             <h2 style="margin:0">SuperGrok Claude Driftsassistent</h2>
             <p style="margin:4px 0 0;color:#5c554c;font-size:0.92rem">Still strategiske spørsmål om anbud, lager, herdighet og leverandørinnkjøp.</p>
           </div>
-          <span class="tag" style="background:#2e6b34;color:#fff">Hjerne: Claude via SuperGrok</span>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span class="tag" style="background:#2e6b34;color:#fff">Hjerne: Claude via SuperGrok</span>
+            <button id="proxy-config-toggle" type="button" class="btn" style="padding:4px 10px;font-size:0.8rem;background:#eae5da;color:#333">⚙️ Konfigurer SuperGrok Claude Proxy</button>
+          </div>
+        </div>
+
+        <!-- Valgfritt konfigureringpanel for Claude/SuperGrok proxy (lokalt i nettleser, 0 secrets i git) -->
+        <div id="proxy-config-box" style="display:none;background:#f2ede4;padding:14px;border-radius:8px;margin-top:12px;border:1px solid #d5cdbe">
+          <h4 style="margin:0 0 6px">🔒 Sikker Proxy-konfigurasjon (lagres kun lokalt i din nettleser)</h4>
+          <p style="font-size:0.85rem;color:#555;margin:0 0 10px">Her kan Tussie eller driftsteamet koble til en ekstern Cloudflare Worker eller SuperGrok-proxy. Ingen hemmeligheter lagres i versjonskontroll.</p>
+          <form id="proxy-config-form" style="display:grid;gap:8px;max-width:540px">
+            <div>
+              <label for="proxy-endpoint-input" class="note" style="display:block;margin-bottom:2px">Proxy Endpoint URL (HTTPS):</label>
+              <input id="proxy-endpoint-input" placeholder="https://api.odegardens.no/proxy/claude eller tilsvarende" style="width:100%;padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:0.88rem">
+            </div>
+            <div>
+              <label for="proxy-key-input" class="note" style="display:block;margin-bottom:2px">Valgfri API-nøkkel / Bearer Token:</label>
+              <input id="proxy-key-input" type="password" placeholder="Valgfri hemmelighet (lagres kun i din nettlesers localStorage)" style="width:100%;padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:0.88rem">
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+              <button class="btn" type="submit" style="padding:6px 14px;font-size:0.85rem">Lagre i nettleser</button>
+              <span id="proxy-status-display" style="font-size:0.8rem;color:#666">Klargjort for serverless proxy (0 kr i demo)</span>
+            </div>
+          </form>
         </div>
 
         <div style="margin:16px 0">
@@ -253,6 +280,20 @@
           <input id="sd-ai-input" placeholder="Skriv ditt spørsmål til driftsassistenten…" style="flex:1" required>
           <button class="btn" type="submit">Spør AI</button>
         </form>
+      </div>
+    </div>
+
+    <!-- INNKOMNE ANBUDSFORESPØRSLER FRA ANBUDSCHAT -->
+    <div class="card pad" style="margin-top:28px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid #eee;padding-bottom:10px">
+        <div>
+          <h3 style="margin:0">📋 Innkomne anbudsforespørsler (fra AI Anbudschat)</h3>
+          <p class="note" style="margin:4px 0 0">Oversikt over kalkulerte kundeanbud mottatt via nettsidens chatveiviser.</p>
+        </div>
+        <button class="btn alt" type="button" onclick="window.openChat&&openChat()" style="font-size:0.85rem;padding:6px 12px">Test ny anbudschat</button>
+      </div>
+      <div id="sd-anbud-listen" style="margin-top:14px">
+        <!-- Fylles med renderInnkomneAnbud() -->
       </div>
     </div>
 

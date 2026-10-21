@@ -47,6 +47,10 @@
   const brainSelect = box.querySelector("#chat-brain-select");
   const hist = [];
 
+  if (window.AI && window.AI.getBrain && brainSelect) {
+    brainSelect.value = AI.getBrain();
+  }
+
   brainSelect.onchange = () => {
     AI.setBrain(brainSelect.value);
     const valgte = brainSelect.options[brainSelect.selectedIndex].text;

@@ -5,16 +5,26 @@
  * Sikkerhet: Ingen hemmeligheter/API-nøkler i kildekoden.
  * ============================================================ */
 
+const _savedProxy = (() => {
+  try {
+    const raw = localStorage.getItem("odegarden_proxy_config");
+    return raw ? JSON.parse(raw) : {};
+  } catch (_) {
+    return {};
+  }
+})();
+
 window.AI_CONFIG = {
-  ACTIVE_BRAIN: "claude_supergrok", // "claude_supergrok" | "local_llama" | "rulebased"
+  ACTIVE_BRAIN: _savedProxy.activeBrain || "claude_supergrok", // "claude_supergrok" | "local_llama" | "rulebased"
 
   CLAUDE_SUPERGROK: {
     id: "claude_supergrok",
     navn: "Claude via SuperGrok (Produksjonshjerne)",
     beskrivelse: "Toppklasse resonnering for anbud, mengdeberegning og innkjøp.",
-    endpoint: "", // Konfigureres via sikker proxy, f.eks. https://api.odegardens.no/proxy/claude
-    model: "claude-3-5-sonnet",
-    status: "Klargjort for serverless proxy"
+    endpoint: _savedProxy.endpoint || "", // Konfigureres via sikker proxy, f.eks. https://api.odegardens.no/proxy/claude
+    apiKey: _savedProxy.apiKey || "",
+    model: _savedProxy.model || "claude-3-5-sonnet",
+    status: _savedProxy.endpoint ? "Aktiv konfigurert proxy" : "Klargjort for serverless proxy (0 kr i demo)"
   },
 
   LOCAL_LLAMA: {

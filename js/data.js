@@ -107,10 +107,10 @@ window.SMARTDRIFT_DATA={
         navn:"Felt Tovdal (Agder innland)",
         beskrivelse:"24 dekar felt for herding og produksjon av robuste løvtrær, hekk og frukttrær. Hardførhet H4–H6.",
         teiger:[
-          {id:"T1",tittel:"Teig T1 – Spisslønn & Prydtrær",areal:"6 daa",arter:"Spisslønn 'Royal Red', Hengebjørk, Rogn",antall:240,status:"Salgsklar høst 2026/vår 2027",plantedato:"Mai 2023",tiltak:"Rotskjæring fullført høst 2025"},
-          {id:"T2",tittel:"Teig T2 – Allétrær & Parklind",areal:"8 daa",arter:"Tilia cordata, Eik, Lønn",antall:190,status:"Salgsklar NÅ (anbud)",plantedato:"September 2022",tiltak:"Formingsbeskjæring utført"},
-          {id:"T3",tittel:"Teig T3 – Frukthage & Bærbusker",areal:"4 daa",arter:"Eple ('Aroma','Gravenstein'), Plomme, Kirsebær",antall:220,status:"I vekst / 60 salgsklare",plantedato:"April 2024",tiltak:"Podet på herdig grunnstamme"},
-          {id:"T4",tittel:"Teig T4 – Hekkproduksjon",areal:"6 daa",arter:"Agnbøk, Bøk, Svartsurbær",antall:1400,status:"Leveringsklar puljevis 2026-2027",plantedato:"Mai 2025",tiltak:"Radgjødsling og ugressharving"}
+          {id:"T1",tittel:"Teig T1 – Spisslønn & Prydtrær",areal:"6 daa",arter:"Spisslønn 'Royal Red', Hengebjørk, Rogn",antall:240,status:"Salgsklar høst 2026/vår 2027",plantedato:"Mai 2023",tiltak:"Rotskjæring fullført høst 2025",vurdering:"Kultivert under innlandsklima i Tovdal. Rotskåret og herdet for H5 – 100 % etableringsevne og minimal reklamasjonsrate ved utplanting i kystsonen (Grimstad/Arendal)."},
+          {id:"T2",tittel:"Teig T2 – Allétrær & Parklind",areal:"8 daa",arter:"Tilia cordata, Eik, Lønn",antall:190,status:"Salgsklar NÅ (anbud)",plantedato:"September 2022",tiltak:"Formingsbeskjæring utført",vurdering:"Gunstig stammediameter 14–16 cm for kommunale anbud og allégater. Høy motstandskraft mot vind, bymiljø og vintersalting."},
+          {id:"T3",tittel:"Teig T3 – Frukthage & Bærbusker",areal:"4 daa",arter:"Eple ('Aroma','Gravenstein'), Plomme, Kirsebær",antall:220,status:"I vekst / 60 salgsklare",plantedato:"April 2024",tiltak:"Podet på herdig grunnstamme",vurdering:"Podet på herdig grunnstamme tilpasset Agder. Rik knoppsetting og sunn rotutvikling for privathager og fellesarealer."},
+          {id:"T4",tittel:"Teig T4 – Hekkproduksjon",areal:"6 daa",arter:"Agnbøk, Bøk, Svartsurbær",antall:1400,status:"Leveringsklar puljevis 2026-2027",plantedato:"Mai 2025",tiltak:"Radgjødsling og ugressharving",vurdering:"Tett rotnettverk og kraftig forgreining. Perfekt herdet for norske vintre sammenlignet med hurtigdrevet import."}
         ]
       },
       {
@@ -118,10 +118,10 @@ window.SMARTDRIFT_DATA={
         navn:"Felt Bergemoen (Bergeveien 8, Grimstad)",
         beskrivelse:"12 dekar med hagesenter, skyggetunneler, krukkeutstilling, vintergrønt og løsvektanlegg.",
         teiger:[
-          {id:"B1",tittel:"Teig B1 – Vintergrønt og Bambus",areal:"3 daa",arter:"Buksbom, Bambus, Barlind, Einer, Hengesypress",antall:480,status:"Salgsklar i potter/klump",plantedato:"Juni 2023",tiltak:"Dryppvanning og lebelte"},
-          {id:"B2",tittel:"Teig B2 – Tuja Smaragd & Brabant",areal:"3 daa",arter:"Thuja occidentalis i flere høyder (120-200 cm)",antall:650,status:"Reservert til anlegg og salg",plantedato:"August 2023",tiltak:"Toppkuttet for tett vekst"},
-          {id:"B3",tittel:"Teig B3 – Roser, Stauder & Slyngplanter",areal:"3 daa",arter:"Buskroser, stilkroser, klematis, klatreplanter",antall:1200,status:"Vinterbeskyttet / sesongklart",plantedato:"Mai 2024",tiltak:"Beskjæring før sesongstart"},
-          {id:"B4",tittel:"Teig B4 – Løsvektanlegg (Reddal Sand)",areal:"3 daa",arter:"12 fraksjoner pukk, grus, sand, bark, kompostjord",antall:"800 m³ kapasitet",status:"Kontinuerlig lager",plantedato:"Løpende",tiltak:"Hjullaster og sikteverk operativt"}
+          {id:"B1",tittel:"Teig B1 – Vintergrønt og Bambus",areal:"3 daa",arter:"Buksbom, Bambus, Barlind, Einer, Hengesypress",antall:480,status:"Salgsklar i potter/klump",plantedato:"Juni 2023",tiltak:"Dryppvanning og lebelte",vurdering:"Kystklima H3. Krukker og containerplanter under automatisert dryppvanning og lebelter som beskytter mot vintersvinn."},
+          {id:"B2",tittel:"Teig B2 – Tuja Smaragd & Brabant",areal:"3 daa",arter:"Thuja occidentalis i flere høyder (120-200 cm)",antall:650,status:"Reservert til anlegg og salg",plantedato:"August 2023",tiltak:"Toppkuttet for tett vekst",vurdering:"Toppkuttet og formklippet for tett skjerming. 310 stk er forhåndsreservert til høstens anbudskontrakter."},
+          {id:"B3",tittel:"Teig B3 – Roser, Stauder & Slyngplanter",areal:"3 daa",arter:"Buskroser, stilkroser, klematis, klatreplanter",antall:1200,status:"Vinterbeskyttet / sesongklart",plantedato:"Mai 2024",tiltak:"Beskjæring før sesongstart",vurdering:"Rikt roseutvalg klargjøres og dekkes med finkuttet bark før vinterdvalen for optimal blomstring fra juni."},
+          {id:"B4",tittel:"Teig B4 – Løsvektanlegg (Reddal Sand)",areal:"3 daa",arter:"12 fraksjoner pukk, grus, sand, bark, kompostjord",antall:"800 m³ kapasitet",status:"Kontinuerlig lager",plantedato:"Løpende",tiltak:"Hjullaster og sikteverk operativt",vurdering:"Kontinuerlig sikteverk og hjullasterkapasitet. 8 km fra Reddal Sand sikrer laveste transportkostnad på Sørlandet."}
         ]
       }
     ]
