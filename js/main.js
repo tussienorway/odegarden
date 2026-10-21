@@ -50,3 +50,7 @@ const kf=$("#kform");if(kf){const sel=$("#kf-tj");sel.innerHTML='<option value="
   f.dataset.mailto=href;$("#f-copy").value=body;$("#f-ok").hidden=false;$("#f-ok").scrollIntoView({block:"nearest"});location.href=href};
  $("#f-kopier").onclick=async e=>{try{await navigator.clipboard.writeText($("#f-copy").value);e.target.textContent="Kopiert!"}catch(_){ $("#f-copy").select()}}}
 })();
+// prototype: anbudschat + PWA
+document.querySelectorAll("[data-anbud]").forEach(b=>b.onclick=()=>window.startAnbud&&startAnbud());
+if(new URLSearchParams(location.search).get("anbud")==="1")setTimeout(()=>window.startAnbud&&startAnbud(),300);
+if("serviceWorker" in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
