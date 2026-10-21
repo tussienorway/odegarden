@@ -98,3 +98,22 @@ figure.card{position:relative}
 #chat-fab{width:auto;height:auto;border-radius:99px;padding:12px 18px;font-size:1rem;font-weight:700;display:flex;gap:8px;align-items:center;animation:none}#chat-fab .i{width:22px;height:22px}
 .disc{font-weight:400;opacity:.9}
 .status.on::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#3cc65a;margin-right:8px}
+
+/* ---- SMARTDRIFT KI DASHBOARD STYLES ---- */
+.sd-header{background:linear-gradient(135deg,var(--g2),#183a26);color:#fff;padding:50px 0 30px}
+.sd-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;border-bottom:2px solid #dcd5c7;margin:24px 0}
+.sd-tab-btn{background:#e8e1d5;border:0;padding:12px 20px;font-weight:800;border-radius:12px 12px 0 0;cursor:pointer;color:var(--ink);font-size:.95rem;transition:.2s;white-space:nowrap}
+.sd-tab-btn:hover{background:#ded5c6}
+.sd-tab-btn.active{background:var(--g);color:#fff}
+.sd-pane{display:none}
+.sd-pane.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.sd-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.sd-badge.salgsklar{background:#dff3e8;color:#145c3a}
+.sd-badge.reservert{background:#fee2e2;color:#991b1b}
+.sd-badge.vekst{background:#fef3c7;color:#92400e}
+.sd-stat-card{background:#fff;padding:18px 20px;border-radius:var(--r);box-shadow:var(--sh);border-top:4px solid var(--g)}
+.sd-stat-val{font-size:1.8rem;font-weight:900;color:var(--g);margin:4px 0}
+.sd-prompt-btn{background:#fff;border:1.5px solid #d5cdbe;border-radius:99px;padding:6px 14px;font-size:.85rem;cursor:pointer;font-weight:700;transition:.15s;text-align:left}
+.sd-prompt-btn:hover{border-color:var(--g);background:#f2faf5}
+
