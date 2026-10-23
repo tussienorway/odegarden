@@ -20,6 +20,151 @@ window.HoloGarden = (function () {
   let isWinter = false;
   let isDragging = false;
 
+  // Snow particle simulation state
+  let snowflakes = [];
+  let animFrameId = null;
+
+  const reqAnim = (typeof window !== "undefined" && window.requestAnimationFrame)
+    ? window.requestAnimationFrame.bind(window)
+    : (cb => setTimeout(cb, 16));
+  const cancelAnim = (typeof window !== "undefined" && window.cancelAnimationFrame)
+    ? window.cancelAnimationFrame.bind(window)
+    : (id => clearTimeout(id));
+
+  function getEl(id) {
+    return (typeof document !== "undefined" && typeof document.getElementById === "function")
+      ? document.getElementById(id)
+      : null;
+  }
+
+  function initSnowParticles() {
+    const w = canvas ? canvas.width : 600;
+    const h = canvas ? canvas.height : 480;
+    const count = Math.min(150, Math.max(65, Math.floor(w / 6)));
+    snowflakes = [];
+    for (let i = 0; i < count; i++) {
+      snowflakes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        radius: 0.9 + Math.random() * 2.5,
+        speedY: 0.8 + Math.random() * 1.9,
+        speedX: (Math.random() - 0.35) * 0.9,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.02 + Math.random() * 0.035,
+        opacity: 0.35 + Math.random() * 0.6,
+        twinkle: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function updateSnowParticles() {
+    if (!canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    for (let i = 0; i < snowflakes.length; i++) {
+      const flake = snowflakes[i];
+      flake.wobble += flake.wobbleSpeed;
+      flake.twinkle += 0.04;
+      flake.x += flake.speedX + Math.sin(flake.wobble) * 0.55;
+      flake.y += flake.speedY;
+
+      // When snowflake falls below bottom, re-spawn at top
+      if (flake.y > h + 10) {
+        flake.y = -10;
+        flake.x = Math.random() * w;
+      }
+      if (flake.x < -10) {
+        flake.x = w + 8;
+      } else if (flake.x > w + 10) {
+        flake.x = -8;
+      }
+    }
+  }
+
+  function drawSnowParticles() {
+    if (!ctx || !canvas) return;
+    ctx.save();
+    for (let i = 0; i < snowflakes.length; i++) {
+      const flake = snowflakes[i];
+      const alpha = Math.min(1, Math.max(0.2, flake.opacity + Math.sin(flake.twinkle) * 0.15));
+      ctx.beginPath();
+      ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(240, 248, 255, ${alpha})`;
+      if (flake.radius > 2.0) {
+        ctx.shadowColor = "rgba(200, 235, 255, 0.75)";
+        ctx.shadowBlur = 5;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function snowAnimationLoop() {
+    if (!isWinter) {
+      animFrameId = null;
+      return;
+    }
+    updateSnowParticles();
+    render();
+    animFrameId = reqAnim(snowAnimationLoop);
+  }
+
+  function startSnowAnimation() {
+    if (snowflakes.length === 0) {
+      initSnowParticles();
+    }
+    if (!animFrameId) {
+      animFrameId = reqAnim(snowAnimationLoop);
+    }
+  }
+
+  function stopSnowAnimation() {
+    if (animFrameId) {
+      cancelAnim(animFrameId);
+      animFrameId = null;
+    }
+  }
+
+  function setWinter(active) {
+    isWinter = !!active;
+
+    const snowBtn = getEl("holo-btn-snow");
+    if (snowBtn) {
+      snowBtn.classList.toggle("active", isWinter);
+      snowBtn.setAttribute("aria-pressed", isWinter ? "true" : "false");
+      const lbl = getEl("holo-snow-label");
+      if (lbl) {
+        lbl.textContent = isWinter ? "Snøfall (Aktivt)" : "Snøsimulering";
+      }
+    }
+
+    const winterChk = getEl("holo-winter-chk");
+    if (winterChk) {
+      winterChk.checked = isWinter;
+    }
+
+    if (window.ScifiHUD && typeof window.ScifiHUD.playTone === "function") {
+      window.ScifiHUD.playTone(isWinter ? 350 : 700, "sine", 0.1);
+    }
+
+    updateStats();
+
+    if (isWinter) {
+      initSnowParticles();
+      startSnowAnimation();
+    } else {
+      stopSnowAnimation();
+      render();
+    }
+  }
+
+  function toggleSnow() {
+    setWinter(!isWinter);
+    return isWinter;
+  }
+
   function getTileDimensions() {
     const w = canvas ? canvas.width : 500;
     const scale = Math.min(1, Math.max(0.55, (w - 20) / 520));
@@ -31,7 +176,7 @@ window.HoloGarden = (function () {
   }
 
   function init(containerId) {
-    const el = document.getElementById(containerId);
+    const el = getEl(containerId);
     if (!el) return;
 
     el.innerHTML = `
@@ -53,9 +198,10 @@ window.HoloGarden = (function () {
             <label for="holo-sun-slider">☀️ Solbane (58.3°N Grimstad):</label>
             <input type="range" id="holo-sun-slider" min="6" max="22" step="0.5" value="14">
             <span id="holo-sun-label">14:00</span>
-            <label style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;cursor:pointer">
-              <input type="checkbox" id="holo-winter-chk"> ❄️ Snøsimulering
-            </label>
+            <button class="holo-control-btn holo-snow-toggle" id="holo-btn-snow" type="button" aria-pressed="false" title="Aktiver eller deaktiver snøfall og vinterforhold">
+              <span id="holo-snow-icon">❄️</span> <span id="holo-snow-label">Snøsimulering</span>
+            </button>
+            <input type="checkbox" id="holo-winter-chk" style="display:none" aria-hidden="true">
           </div>
         </div>
 
@@ -76,13 +222,15 @@ window.HoloGarden = (function () {
       </div>
     `;
 
-    canvas = document.getElementById("holo-canvas");
-    ctx = canvas.getContext("2d");
+    canvas = getEl("holo-canvas");
+    if (canvas && typeof canvas.getContext === "function") {
+      ctx = canvas.getContext("2d");
+    }
 
+    resetGrid();
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    resetGrid();
     setupEventListeners();
     render();
   }
@@ -91,6 +239,9 @@ window.HoloGarden = (function () {
     if (!canvas) return;
     canvas.width = canvas.parentElement.clientWidth;
     canvas.height = canvas.parentElement.clientHeight;
+    if (isWinter) {
+      initSnowParticles();
+    }
     render();
   }
 
@@ -122,7 +273,7 @@ window.HoloGarden = (function () {
       };
     });
 
-    const clearBtn = document.getElementById("holo-btn-clear");
+    const clearBtn = getEl("holo-btn-clear");
     if (clearBtn) {
       clearBtn.onclick = () => {
         resetGrid();
@@ -130,8 +281,8 @@ window.HoloGarden = (function () {
       };
     }
 
-    const sunSlider = document.getElementById("holo-sun-slider");
-    const sunLabel = document.getElementById("holo-sun-label");
+    const sunSlider = getEl("holo-sun-slider");
+    const sunLabel = getEl("holo-sun-label");
     if (sunSlider) {
       sunSlider.oninput = (e) => {
         sunHour = parseFloat(e.target.value);
@@ -142,17 +293,22 @@ window.HoloGarden = (function () {
       };
     }
 
-    const winterChk = document.getElementById("holo-winter-chk");
-    if (winterChk) {
-      winterChk.onchange = (e) => {
-        isWinter = e.target.checked;
-        if (window.ScifiHUD) ScifiHUD.playTone(isWinter ? 350 : 700, "sine", 0.1);
-        updateStats();
-        render();
+    const snowBtn = getEl("holo-btn-snow");
+    if (snowBtn) {
+      snowBtn.onclick = (e) => {
+        e.preventDefault();
+        setWinter(!isWinter);
       };
     }
 
-    const toAnbudBtn = document.getElementById("holo-btn-to-anbud");
+    const winterChk = getEl("holo-winter-chk");
+    if (winterChk) {
+      winterChk.onchange = (e) => {
+        setWinter(winterChk.checked);
+      };
+    }
+
+    const toAnbudBtn = getEl("holo-btn-to-anbud");
     if (toAnbudBtn) {
       toAnbudBtn.onclick = sendHoloToAnbud;
     }
@@ -220,6 +376,7 @@ window.HoloGarden = (function () {
   }
 
   function updateStats() {
+    if (!grid || grid.length < gridH) return;
     let steinCount = 0;
     let hekkCount = 0;
     let treCount = 0;
@@ -246,19 +403,19 @@ window.HoloGarden = (function () {
     // Rough pricing estimate for instant commercial feedback
     const estPris = Math.round(areaM2 * 1150 + planterTotalt * 420 + barkCount * 650 + damCount * 4500);
 
-    const aEl = document.getElementById("holo-stat-area");
+    const aEl = getEl("holo-stat-area");
     if (aEl) aEl.innerHTML = `Areal belegningsstein: <strong>${areaM2} m²</strong> (${steinCount} moduler)`;
 
-    const pEl = document.getElementById("holo-stat-pukk");
+    const pEl = getEl("holo-stat-pukk");
     if (pEl) pEl.innerHTML = `Bærelag Reddal Pukk: <strong>${pukkM3} m³</strong> (0–32 mm)`;
 
-    const plEl = document.getElementById("holo-stat-planter");
+    const plEl = getEl("holo-stat-planter");
     if (plEl) plEl.innerHTML = `Planter: <strong>${planterTotalt} stk</strong> (${hekkCount * 3} hekk, ${treCount} trær)`;
 
-    const coEl = document.getElementById("holo-stat-co2");
+    const coEl = getEl("holo-stat-co2");
     if (coEl) coEl.innerHTML = `Årlig CO2-fangst: <strong>${co2Kg} kg</strong> (Bio-balanse)`;
 
-    const prEl = document.getElementById("holo-stat-pris");
+    const prEl = getEl("holo-stat-pris");
     if (prEl) {
       if (isWinter) {
         const snoeM3 = Math.round(areaM2 * 0.35);
@@ -270,7 +427,7 @@ window.HoloGarden = (function () {
   }
 
   function render() {
-    if (!ctx || !canvas) return;
+    if (!ctx || !canvas || !grid || grid.length < gridH) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const { tileW, tileH, scale } = getTileDimensions();
@@ -307,10 +464,15 @@ window.HoloGarden = (function () {
         }
       }
     }
+
+    // Draw active falling snow particles
+    if (isWinter) {
+      drawSnowParticles();
+    }
   }
 
   function drawHoloGridBackground(ox, oy, tileW, tileH) {
-    ctx.strokeStyle = "rgba(0, 255, 136, 0.12)";
+    ctx.strokeStyle = isWinter ? "rgba(140, 210, 255, 0.15)" : "rgba(0, 255, 136, 0.12)";
     ctx.lineWidth = 1;
 
     for (let y = 0; y <= gridH; y++) {
@@ -346,7 +508,12 @@ window.HoloGarden = (function () {
     ctx.closePath();
 
     if (isWinter) {
-      ctx.fillStyle = type === "dam" ? "#1a3b47" : "#e6eff2";
+      switch (type) {
+        case "stein": ctx.fillStyle = "#a8b5bd"; break; // Dusted stone pavers
+        case "bark": ctx.fillStyle = "#5c493c"; break;  // Winter bark mulch
+        case "dam": ctx.fillStyle = "#163a47"; break;   // Frozen ice surface
+        default: ctx.fillStyle = "#dcebf0"; break;      // Fresh snow layer
+      }
     } else {
       switch (type) {
         case "stein": ctx.fillStyle = "#5a665f"; break;
@@ -357,7 +524,7 @@ window.HoloGarden = (function () {
     }
     ctx.fill();
 
-    ctx.strokeStyle = "rgba(0, 255, 136, 0.22)";
+    ctx.strokeStyle = isWinter ? "rgba(140, 210, 240, 0.35)" : "rgba(0, 255, 136, 0.22)";
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.restore();
@@ -370,7 +537,7 @@ window.HoloGarden = (function () {
     const cy = y + tileH / 2;
     const r = (type === "tre" ? 22 : 13) * scale;
     ctx.ellipse(cx + dx, cy + dy, r, r * 0.4, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+    ctx.fillStyle = isWinter ? "rgba(10, 25, 35, 0.35)" : "rgba(0, 0, 0, 0.4)";
     ctx.fill();
     ctx.restore();
   }
@@ -382,7 +549,7 @@ window.HoloGarden = (function () {
     ctx.save();
     if (type === "tre") {
       // Trunk
-      ctx.fillStyle = "#5c4033";
+      ctx.fillStyle = isWinter ? "#423028" : "#5c4033";
       ctx.fillRect(cx - 3 * scale, cy - 35 * scale, 6 * scale, 35 * scale);
 
       // Foliage crown
@@ -390,8 +557,16 @@ window.HoloGarden = (function () {
       ctx.arc(cx, cy - 45 * scale, 20 * scale, 0, Math.PI * 2);
       ctx.fillStyle = isWinter ? "#cbd7d9" : "#2d8a4e";
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,255,136,0.3)";
+      ctx.strokeStyle = isWinter ? "rgba(220,245,255,0.6)" : "rgba(0,255,136,0.3)";
       ctx.stroke();
+
+      // Winter snow cap on tree crown
+      if (isWinter) {
+        ctx.beginPath();
+        ctx.arc(cx, cy - 49 * scale, 13 * scale, Math.PI * 0.9, Math.PI * 2.1);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+        ctx.fill();
+      }
     } else if (type === "hekk") {
       // Conifer hedge cone
       ctx.beginPath();
@@ -399,13 +574,24 @@ window.HoloGarden = (function () {
       ctx.lineTo(cx + 13 * scale, cy);
       ctx.lineTo(cx - 13 * scale, cy);
       ctx.closePath();
-      ctx.fillStyle = isWinter ? "#8fa398" : "#1f6e37";
+      ctx.fillStyle = isWinter ? "#6d8577" : "#1f6e37";
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,255,136,0.3)";
+      ctx.strokeStyle = isWinter ? "rgba(220,245,255,0.5)" : "rgba(0,255,136,0.3)";
       ctx.stroke();
+
+      // Winter snow dusting on hedge top
+      if (isWinter) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 30 * scale);
+        ctx.lineTo(cx + 6 * scale, cy - 16 * scale);
+        ctx.lineTo(cx - 6 * scale, cy - 16 * scale);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+        ctx.fill();
+      }
     } else if (type === "stein") {
       // Paving texture lines
-      ctx.strokeStyle = "rgba(255,255,255,0.15)";
+      ctx.strokeStyle = isWinter ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.15)";
       ctx.strokeRect(cx - 7 * scale, cy - 3.5 * scale, 14 * scale, 7 * scale);
     } else if (type === "lys") {
       // Outdoor bollard light
@@ -415,18 +601,28 @@ window.HoloGarden = (function () {
       ctx.arc(cx, cy - 13 * scale, 4.5 * scale, 0, Math.PI * 2);
       ctx.fillStyle = "#fff5a0";
       ctx.fill();
-      // Glow
+      // Glow (warmer and wider in winter)
       ctx.beginPath();
-      ctx.arc(cx, cy - 13 * scale, 14 * scale, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 230, 100, 0.2)";
+      ctx.arc(cx, cy - 13 * scale, (isWinter ? 19 : 14) * scale, 0, Math.PI * 2);
+      ctx.fillStyle = isWinter ? "rgba(255, 220, 110, 0.32)" : "rgba(255, 230, 100, 0.2)";
       ctx.fill();
     } else if (type === "dam") {
-      // Water ripple
+      // Water ripple or frozen ice ring
       ctx.beginPath();
       ctx.ellipse(cx, cy, 13 * scale, 6.5 * scale, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(0, 229, 255, 0.5)";
+      ctx.strokeStyle = isWinter ? "rgba(180, 240, 255, 0.7)" : "rgba(0, 229, 255, 0.5)";
       ctx.lineWidth = 1.5;
       ctx.stroke();
+
+      if (isWinter) {
+        // Frozen ice cross-reflections
+        ctx.beginPath();
+        ctx.moveTo(cx - 7 * scale, cy - 2 * scale);
+        ctx.lineTo(cx + 7 * scale, cy + 2 * scale);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
     }
     ctx.restore();
   }
@@ -466,6 +662,9 @@ window.HoloGarden = (function () {
   return {
     init,
     resetGrid,
-    sendHoloToAnbud
+    sendHoloToAnbud,
+    toggleSnow,
+    setWinter,
+    isWinter: () => isWinter
   };
 })();

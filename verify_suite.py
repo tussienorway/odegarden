@@ -221,6 +221,12 @@ async function runTests() {
   assert(typeof NeuroScan.analyzeCanvas === 'function', 'NeuroScan analyzeCanvas funksjon eksisterer');
   assert(typeof HoloGarden.init === 'function', 'HoloGarden init funksjon eksisterer');
   assert(typeof HoloGarden.resetGrid === 'function', 'HoloGarden resetGrid funksjon eksisterer');
+  assert(typeof HoloGarden.toggleSnow === 'function', 'HoloGarden toggleSnow funksjon eksisterer');
+  assert(typeof HoloGarden.setWinter === 'function', 'HoloGarden setWinter funksjon eksisterer');
+  HoloGarden.setWinter(true);
+  assert(HoloGarden.isWinter() === true, 'HoloGarden snøsimulering kan settes til aktiv');
+  HoloGarden.setWinter(false);
+  assert(HoloGarden.isWinter() === false, 'HoloGarden snøsimulering kan deaktiveres responsivt');
   assert(typeof AgroRecon.toggleDronePatrol === 'function', 'AgroRecon toggleDronePatrol funksjon eksisterer');
 
   if (failed > 0) {

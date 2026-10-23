@@ -301,8 +301,8 @@
 
   function setSentinelScenario(scen) {
     document.querySelectorAll(".sentinel-pill").forEach(p => p.classList.remove("active"));
-    const btn = event && event.target;
-    if (btn) btn.classList.add("active");
+    const btn = (typeof event !== "undefined" && event && event.target) ? event.target : null;
+    if (btn && btn.classList) btn.classList.add("active");
 
     const slider = document.getElementById("sentinel-temp-slider");
     let target = 1.4;
@@ -313,6 +313,11 @@
     if (slider) slider.value = target;
     updateSentinel(target);
     if (window.ScifiHUD) ScifiHUD.playTone(target < 0 ? 440 : 660, "sine", 0.06);
+
+    // Sync with HoloGarden 3D winter snow simulation
+    if (window.HoloGarden && typeof HoloGarden.setWinter === "function") {
+      HoloGarden.setWinter(scen === "storm");
+    }
   }
 
   function sendSentinelToAnbud() {

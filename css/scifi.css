@@ -241,6 +241,24 @@ body.cyber-hud .btn.ghost:hover {
   box-shadow: 0 0 12px rgba(0, 255, 136, 0.3);
 }
 
+.holo-snow-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  border-color: rgba(0, 229, 255, 0.45);
+  color: #e0f7ff;
+}
+
+.holo-snow-toggle:hover,
+.holo-snow-toggle.active {
+  background: rgba(0, 229, 255, 0.24);
+  border-color: var(--neon-cyan);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.5);
+}
+
 .holo-hud-stats {
   position: absolute;
   bottom: 14px;
