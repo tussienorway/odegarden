@@ -72,7 +72,8 @@ required_facts = [
     ("Bergemoen", ["index.html", "hagesenter.html", "smartdrift.html", "js/data.js"]),
     ("Claude via SuperGrok", ["js/ai-config.js", "js/ai.js", "smartdrift.html"]),
     ("RTX 5060 Ti", ["js/ai-config.js", "js/ai.js", "smartdrift.html"]),
-    ("SmartDrift KI", ["index.html", "smartdrift.html", "broyting.html", "losvekt.html", "anleggsgartner.html", "hagesenter.html"])
+    ("SmartDrift KI", ["index.html", "smartdrift.html", "broyting.html", "losvekt.html", "anleggsgartner.html", "hagesenter.html"]),
+    ("Sci-Fi Lab", ["index.html", "smartdrift.html", "scifi-lab.html"])
 ]
 
 all_facts_ok = True
@@ -92,7 +93,6 @@ try:
         active = [m['name'] for m in models.get('models', [])]
         print(f"PASS: Local llama-server online, active models: {active}")
 
-    # Test direct completion with reasoning_effort: none
     payload = {
         "model": "qwen3.5-9b",
         "messages": [
@@ -126,6 +126,11 @@ const vm = require('vm');
 
 const ctx = {
   window: {},
+  document: {
+    addEventListener: () => {},
+    createElement: () => ({ setAttribute: () => {}, querySelector: () => null }),
+    body: { classList: { add: () => {}, remove: () => {}, toggle: () => false, contains: () => false }, append: () => {}, insertBefore: () => {} }
+  },
   console: console,
   setTimeout: setTimeout,
   clearTimeout: clearTimeout,
@@ -142,9 +147,15 @@ vm.runInContext(fs.readFileSync('js/ai-config.js', 'utf8'), ctx);
 vm.runInContext(fs.readFileSync('js/data.js', 'utf8'), ctx);
 vm.runInContext(fs.readFileSync('js/store.js', 'utf8'), ctx);
 vm.runInContext(fs.readFileSync('js/ai.js', 'utf8'), ctx);
+vm.runInContext(fs.readFileSync('js/neuroscan.js', 'utf8'), ctx);
+vm.runInContext(fs.readFileSync('js/hologarden.js', 'utf8'), ctx);
+vm.runInContext(fs.readFileSync('js/agrorecon.js', 'utf8'), ctx);
 
 const AI = ctx.window.AI;
 const D = ctx.window.SMARTDRIFT_DATA;
+const NeuroScan = ctx.window.NeuroScan;
+const HoloGarden = ctx.window.HoloGarden;
+const AgroRecon = ctx.window.AgroRecon;
 let failed = 0;
 
 function assert(condition, desc) {
@@ -205,11 +216,16 @@ async function runTests() {
   assert(D.plantekart.lokasjoner[0].teiger[0].vurdering.includes('Tovdal'), 'Teig T1 har stedsriktig vekstvurdering');
   assert(D.plantekart.lokasjoner[1].teiger[3].vurdering.includes('Reddal Sand'), 'Teig B4 har stedsriktig løsvektvurdering');
 
+  // 11. Sci-Fi Moduler Integritet
+  assert(typeof NeuroScan.runPreset === 'function', 'NeuroScan runPreset funksjon eksisterer');
+  assert(typeof HoloGarden.init === 'function', 'HoloGarden init funksjon eksisterer');
+  assert(typeof AgroRecon.toggleDronePatrol === 'function', 'AgroRecon toggleDronePatrol funksjon eksisterer');
+
   if (failed > 0) {
     console.error(`\\n${failed} JS-tester feilet!`);
     process.exit(1);
   } else {
-    console.log('\\nPASS: Alle 10 JS logikk- og edge case-tester bestått feilfritt!');
+    console.log('\\nPASS: Alle 11 JS logikk- og edge case-tester bestått feilfritt!');
   }
 }
 
