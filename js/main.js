@@ -15,8 +15,10 @@ const st=$("#aapen-status");if(st){if(t&&h>=t[0]&&h<t[1]){st.textContent=`Hagese
  st.textContent=`Hagesenteret er stengt nå${hd?" ("+hd+")":""} · ${txt}`;st.classList.add("closed")}}
 // nå i sesong + nyheter
 const MN=["januar","februar","mars","april","mai","juni","juli","august","september","oktober","november","desember"],mo=now.getMonth()+1;
-if($("#maaned")){$("#mnd").textContent=MN[mo-1];$("#maaned").innerHTML=(MAANED[mo]||[]).map(x=>`<li>${esc(x)}</li>`).join("");
- $("#nyheter").innerHTML=(NYHETER||[]).slice(0,3).map(n=>`<article class="card pad news">${n.eksempel?'<span class="ex">EKSEMPEL</span> ':""}<time datetime="${n.dato}">${new Date(n.dato).toLocaleDateString("nb-NO",{day:"numeric",month:"long",year:"numeric"})}</time><h4>${esc(n.tittel)}</h4><p>${esc(n.tekst)}</p></article>`).join("")||'<p class="note">Ingen nyheter akkurat nå.</p>'}
+const visNaa=(MA,NY)=>{$("#mnd").textContent=MN[mo-1];$("#maaned").innerHTML=(MA[mo]||[]).map(x=>`<li>${esc(x)}</li>`).join("");
+ $("#nyheter").innerHTML=(NY||[]).slice(0,3).map(n=>`<article class="card pad news">${n.eksempel?'<span class="ex">EKSEMPEL</span> ':""}<time datetime="${n.dato}">${new Date(n.dato).toLocaleDateString("nb-NO",{day:"numeric",month:"long",year:"numeric"})}</time><h4>${esc(n.tittel)}</h4><p>${esc(n.tekst)}</p></article>`).join("")||'<p class="note">Ingen nyheter akkurat nå.</p>'};
+if($("#maaned")){visNaa(MAANED,NYHETER);/* Innhold redigert i CMS (content/*.json) overstyrer data.js */
+ Promise.all(["content/sesong.json","content/nyheter.json"].map(u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null))).then(([se,ny])=>{const MA=se?Object.fromEntries(se.maaneder.map(m=>[m.maaned,m.punkter])):MAANED;visNaa(MA,ny?ny.nyheter.sort((a,b)=>b.dato.localeCompare(a.dato)):NYHETER)})}
 // tjenester
 const IC={hagesenter:"leaf",planteskole:"tree",anleggsgartner:"wall",broyting:"snow",drift:"park",losvekt:"truck"},LNK={hagesenter:"hagesenter.html",planteskole:"hagesenter.html",anleggsgartner:"anleggsgartner.html",broyting:"broyting.html",drift:"broyting.html",losvekt:"losvekt.html"};
 if($("#tj"))$("#tj").innerHTML=TJENESTER.map(t=>`<article class="card"><img src="${t.img.replace("img/ekte/","img/thumb/")}" alt="${esc(t.navn)}" width="480" height="480" loading="lazy" decoding="async"><div class="in"><div class="ico">${ico(IC[t.id])}</div><h3>${t.navn}</h3><p>${t.tekst}</p><a href="${LNK[t.id]}">Les mer om ${esc(t.navn.split(" – ")[0].toLowerCase())} ➜</a></div></article>`).join("");
@@ -50,3 +52,7 @@ const kf=$("#kform");if(kf){const sel=$("#kf-tj");sel.innerHTML='<option value="
   f.dataset.mailto=href;$("#f-copy").value=body;$("#f-ok").hidden=false;$("#f-ok").scrollIntoView({block:"nearest"});location.href=href};
  $("#f-kopier").onclick=async e=>{try{await navigator.clipboard.writeText($("#f-copy").value);e.target.textContent="Kopiert!"}catch(_){ $("#f-copy").select()}}}
 })();
+// prototype: anbudschat + PWA
+document.querySelectorAll("[data-anbud]").forEach(b=>b.onclick=()=>window.startAnbud&&startAnbud());
+if(new URLSearchParams(location.search).get("anbud")==="1")setTimeout(()=>window.startAnbud&&startAnbud(),300);
+if("serviceWorker" in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));

@@ -1,31 +1,27 @@
-/* =========================================================================
- * ØDEGÅRDENS AI ANBUDS- OG PROSJEKTASSISTENT
- * Hjerne: Claude via SuperGrok | Lokal RTX 5060 Ti | Regelbasert demo
- * ========================================================================= */
-(function(){
+(function () {
   const fab = document.createElement("button");
   fab.id = "chat-fab";
-  fab.setAttribute("aria-label", "Åpne AI anbudschat");
+  fab.setAttribute("aria-label", "Åpne AI anbudsassistent");
   fab.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-chat"/></svg><span>AI Anbudschat</span>';
 
   const box = document.createElement("div");
   box.id = "chat";
   box.innerHTML = `
-    <div class="hd">
-      <div style="flex:1">
-        <span style="display:flex;align-items:center;gap:6px">
+    <div class="hd" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+        <span>
           <b>AI Anbuds- & Prosjektassistent</b>
         </span>
-        <div style="margin-top:4px;display:flex;align-items:center;gap:6px">
-          <label for="chat-brain-select" style="font-size:0.75rem;opacity:0.9">Hjerne:</label>
-          <select id="chat-brain-select" style="font-size:0.75rem;padding:2px 4px;border-radius:6px;background:#fff;color:#18241e;border:1px solid #ccc;cursor:pointer">
-            <option value="claude_supergrok" selected>Claude via SuperGrok</option>
-            <option value="local_llama">Lokal Qwen (RTX 5060 Ti)</option>
-            <option value="rulebased">Regelbasert (Instant)</option>
-          </select>
-        </div>
+        <button aria-label="Lukk" style="font-size:1.6rem;padding:0 6px">×</button>
       </div>
-      <button aria-label="Lukk" style="font-size:1.6rem;padding:0 6px">×</button>
+      <div style="margin-top:2px;display:flex;align-items:center;gap:6px">
+        <label for="chat-brain-select" style="font-size:0.75rem;opacity:0.9">Hjerne:</label>
+        <select id="chat-brain-select" style="font-size:0.75rem;padding:2px 4px;border-radius:6px;background:#fff;color:#18241e;border:1px solid #ccc;cursor:pointer">
+          <option value="claude_supergrok" selected>Claude via SuperGrok</option>
+          <option value="local_llama">Lokal Qwen (RTX 5060 Ti)</option>
+          <option value="rulebased">Regelbasert (Instant)</option>
+        </select>
+      </div>
     </div>
     <div class="chat-banner" style="background:#f0f7f2;border-bottom:1px solid #dbe8df;padding:6px 14px;font-size:0.78rem;color:#1f4d24;display:flex;justify-content:space-between;align-items:center">
       <span>📐 Mengdeberegning for stein, bark, hekk og brøyting</span>
@@ -51,11 +47,13 @@
     brainSelect.value = AI.getBrain();
   }
 
-  brainSelect.onchange = () => {
-    AI.setBrain(brainSelect.value);
-    const valgte = brainSelect.options[brainSelect.selectedIndex].text;
-    toast("Aktiv hjerne: " + valgte);
-  };
+  if (brainSelect) {
+    brainSelect.onchange = () => {
+      AI.setBrain(brainSelect.value);
+      const valgte = brainSelect.options[brainSelect.selectedIndex].text;
+      if (window.toast) toast("Aktiv hjerne: " + valgte);
+    };
+  }
 
   const add = (t, who) => {
     const m = document.createElement("div");
@@ -87,7 +85,9 @@
     const w = add("Beregner og henter svar…", "b");
 
     try {
-      const r = await AI.reply(hist, "anbud");
+      const r = (window.Anbud && (Anbud.active || Anbud.wants(t)))
+        ? await Anbud.handle(t)
+        : await AI.reply(hist, "anbud");
       w.textContent = r.reply;
 
       if (r.actions) {
@@ -104,7 +104,7 @@
           } else {
             b.onclick = () => {
               if (navigator.clipboard) navigator.clipboard.writeText(x.copy);
-              toast("Kopiert til utklippstavle");
+              if (window.toast) toast("Kopiert til utklippstavle");
             };
           }
           a.appendChild(b);
@@ -116,7 +116,7 @@
       hist.push({ role: "assistant", content: r.reply });
       quick(r.qr);
 
-      if (r.request) {
+      if (r.request && window.Store) {
         Store.addRequest({
           ...r.request,
           samtale: hist.map(h => (h.role === "user" ? "Kunde: " : "Assistent: ") + h.content).join("\n")
@@ -147,7 +147,7 @@
         "Hva kan vi hjelpe deg med i dag?",
         "b"
       );
-      quick(["Start anbudschat", "50 m² belegningsstein", "Bark i løsvekt", "13 brøytemaskiner"]);
+      quick(["Be om tilbud", "50 m² belegningsstein", "Bark i løsvekt", "13 brøytemaskiner"]);
     }
     if (box.classList.contains("on")) inp.focus();
   };
@@ -155,4 +155,16 @@
   fab.onclick = open;
   box.querySelector(".hd button").onclick = () => box.classList.remove("on");
   window.openChat = open;
+  window.startAnbud = () => {
+    if (!box.classList.contains("on")) open();
+    send("Be om tilbud");
+  };
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-anbud]");
+    if (btn) {
+      e.preventDefault();
+      window.startAnbud();
+    }
+  });
 })();

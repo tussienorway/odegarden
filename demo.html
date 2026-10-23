@@ -1,0 +1,23 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>DEMO – Anbudsinnboks | Ødegården (prototype)</title>
+<meta name="description" content="Demo av intern innboks for forespørsler. Prototype med eksempeldata.">
+<meta name="theme-color" content="#2e6b34"><link rel="icon" href="favicon.ico"><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="css/style.css">
+</head><body class="demo">
+<a class="skip" href="#main">Hopp til innhold</a>
+<div class="demo-bar" role="note"><b>DEMO</b> Prototype med EKSEMPEL-data. Alt lagres bare i denne nettleseren (localStorage). Ingen e-post eller SMS sendes. Rutingsreglene er EKSEMPEL.</div>
+<header class="top"><nav class="wrap nav" aria-label="Demo-meny"><a href="./"><img src="img/logo.svg" alt="Ødegården – til forsiden" width="142" height="44"></a><span class="ex">DEMO · Anbudsinnboks</span></nav></header>
+<main id="main" class="wrap dmain">
+<h1>Forespørsler</h1>
+<div class="dtools"><button class="btn" type="button" id="d-seed">Fyll inn EKSEMPEL-forespørsler</button> <button class="btn ghost" type="button" id="d-reset">Tilbakestill demo</button> <button class="btn ghost" type="button" id="d-guide">Start guidet demo</button> <button class="btn ghost" type="button" id="d-csv">Eksporter CSV</button> <a class="btn ghost" href="./?anbud=1">Lag ny forespørsel i chatten</a></div>
+<div class="tabs" role="tablist" aria-label="Innboks per rolle" id="d-tabs"></div>
+<div class="dfilt"><label>Status <select id="d-status"><option value="">Alle</option><option value="ny">Ny</option><option value="tildelt">Tildelt</option><option value="tilbud sendt">Tilbud sendt</option><option value="vunnet">Vunnet</option><option value="tapt">Tapt</option></select></label>
+<label>Hast <select id="d-hast"><option value="">Alle</option><option value="hoy">Haster</option><option value="normal">Normal</option><option value="lav">Lav</option></select></label>
+<label>Søk <input id="d-sok" type="search" placeholder="Navn, sted, tekst …"></label><span class="note" id="d-ant" aria-live="polite"></span></div>
+<div class="dgrid"><div class="scroll"><table class="pt dtab"><caption class="sr-cap">Forespørsler</caption><thead><tr><th scope="col">Ref.</th><th scope="col">Mottatt</th><th scope="col">Kunde</th><th scope="col">Tjeneste</th><th scope="col">Hast</th><th scope="col">Til</th><th scope="col">Status</th></tr></thead><tbody id="d-rows"></tbody></table></div>
+<section class="card pad" id="d-det" aria-live="polite"><p class="note">Velg en forespørsel for å se detaljer.</p></section></div>
+<section class="card pad dlog"><h2>Simulerte varsler</h2><ul id="d-log" class="note"></ul></section>
+<section class="card pad"><h2>Rutingsregler (EKSEMPEL)</h2><ol id="d-regler"></ol><p class="note">Ligger i <code>js/ruting-config.js</code>. Første regel som treffer, bestemmer mottaker.</p></section>
+</main>
+<div class="guide" id="guide" role="dialog" aria-modal="false" aria-labelledby="g-t" hidden><h2 id="g-t"></h2><p id="g-p"></p><button class="btn" type="button" id="g-next">Neste</button> <button class="btn ghost" type="button" id="g-end">Avslutt</button></div>
+<script src="js/data.js" defer></script><script src="js/ruting-config.js" defer></script><script src="js/ruting.js" defer></script><script src="js/db.js" defer></script><script src="js/demo-data.js" defer></script><script src="js/demo.js" defer></script>
+</body></html>

@@ -1,0 +1,37 @@
+# Decap CMS – redigerer innholdsfilene i content/. Krever GitHub OAuth før innlogging virker (se DRIFT.md).
+backend:
+  name: github
+  repo: tussienorway/odegarden
+  branch: main
+  # base_url: https://<oauth-proxy>   # MÅ settes opp (f.eks. Cloudflare Worker / Netlify) – krever tussies ja
+locale: nb_no
+media_folder: img/ekte
+public_folder: img/ekte
+collections:
+  - name: innhold
+    label: Innhold
+    files:
+      - name: nyheter
+        label: Nyheter
+        file: content/nyheter.json
+        format: json
+        fields:
+          - label: Nyheter
+            name: nyheter
+            widget: list
+            fields:
+              - {label: Dato, name: dato, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+              - {label: Tittel, name: tittel, widget: string}
+              - {label: Tekst, name: tekst, widget: text}
+              - {label: "Merk som EKSEMPEL", name: eksempel, widget: boolean, default: false, required: false}
+      - name: sesong
+        label: "Nå i sesong (per måned)"
+        file: content/sesong.json
+        format: json
+        fields:
+          - label: Måneder
+            name: maaneder
+            widget: list
+            fields:
+              - {label: "Måned (1–12)", name: maaned, widget: number, value_type: int, min: 1, max: 12}
+              - {label: Punkter, name: punkter, widget: list}
