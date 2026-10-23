@@ -297,6 +297,15 @@
       if (fleet) fleet.textContent = '13 av 13';
       if (status) status.innerHTML = 'Status: <strong>Full brøyteutrykning i Agder</strong>';
     }
+
+    // Reactive sync with HoloGarden 3D winter snow simulation on temperature shifts
+    if (window.HoloGarden && typeof HoloGarden.setWinter === "function") {
+      if (val <= -5.0 && !HoloGarden.isWinter()) {
+        HoloGarden.setWinter(true);
+      } else if (val > 0.5 && HoloGarden.isWinter()) {
+        HoloGarden.setWinter(false);
+      }
+    }
   }
 
   function setSentinelScenario(scen) {

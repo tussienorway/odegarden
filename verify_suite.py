@@ -225,8 +225,16 @@ async function runTests() {
   assert(typeof HoloGarden.setWinter === 'function', 'HoloGarden setWinter funksjon eksisterer');
   HoloGarden.setWinter(true);
   assert(HoloGarden.isWinter() === true, 'HoloGarden snøsimulering kan settes til aktiv');
+  HoloGarden.setWinter(true);
+  assert(HoloGarden.isWinter() === true, 'Gjentatt setWinter(true) beholder aktiv tilstand uten feil');
   HoloGarden.setWinter(false);
   assert(HoloGarden.isWinter() === false, 'HoloGarden snøsimulering kan deaktiveres responsivt');
+  HoloGarden.setWinter(false);
+  assert(HoloGarden.isWinter() === false, 'Gjentatt setWinter(false) er idempotent');
+  const toggledOn = HoloGarden.toggleSnow();
+  assert(toggledOn === true && HoloGarden.isWinter() === true, 'HoloGarden toggleSnow() aktiverer snø');
+  const toggledOff = HoloGarden.toggleSnow();
+  assert(toggledOff === false && HoloGarden.isWinter() === false, 'HoloGarden toggleSnow() deaktiverer snø');
   assert(typeof AgroRecon.toggleDronePatrol === 'function', 'AgroRecon toggleDronePatrol funksjon eksisterer');
 
   if (failed > 0) {

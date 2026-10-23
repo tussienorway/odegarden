@@ -87,35 +87,42 @@ window.HoloGarden = (function () {
     for (let i = 0; i < snowflakes.length; i++) {
       const flake = snowflakes[i];
       const alpha = Math.min(1, Math.max(0.2, flake.opacity + Math.sin(flake.twinkle) * 0.15));
+
+      // Glow halo for larger foreground snowflakes without costly shadowBlur
+      if (flake.radius > 2.0) {
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, flake.radius * 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180, 230, 255, ${alpha * 0.28})`;
+        ctx.fill();
+      }
+
       ctx.beginPath();
       ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(240, 248, 255, ${alpha})`;
-      if (flake.radius > 2.0) {
-        ctx.shadowColor = "rgba(200, 235, 255, 0.75)";
-        ctx.shadowBlur = 5;
-      } else {
-        ctx.shadowBlur = 0;
-      }
+      ctx.fillStyle = `rgba(240, 250, 255, ${alpha})`;
       ctx.fill();
     }
     ctx.restore();
   }
 
   function snowAnimationLoop() {
-    if (!isWinter) {
-      animFrameId = null;
-      return;
+    animFrameId = null;
+    if (!isWinter) return;
+    try {
+      updateSnowParticles();
+      render();
+    } catch (err) {
+      console.warn("HoloGarden snow render error:", err);
     }
-    updateSnowParticles();
-    render();
-    animFrameId = reqAnim(snowAnimationLoop);
+    if (isWinter) {
+      animFrameId = reqAnim(snowAnimationLoop);
+    }
   }
 
   function startSnowAnimation() {
     if (snowflakes.length === 0) {
       initSnowParticles();
     }
-    if (!animFrameId) {
+    if (!animFrameId && isWinter) {
       animFrameId = reqAnim(snowAnimationLoop);
     }
   }
@@ -128,7 +135,9 @@ window.HoloGarden = (function () {
   }
 
   function setWinter(active) {
-    isWinter = !!active;
+    const nextState = !!active;
+    if (isWinter === nextState && snowflakes.length > 0) return;
+    isWinter = nextState;
 
     const snowBtn = getEl("holo-btn-snow");
     if (snowBtn) {
@@ -141,7 +150,7 @@ window.HoloGarden = (function () {
     }
 
     const winterChk = getEl("holo-winter-chk");
-    if (winterChk) {
+    if (winterChk && winterChk.checked !== isWinter) {
       winterChk.checked = isWinter;
     }
 
@@ -152,7 +161,9 @@ window.HoloGarden = (function () {
     updateStats();
 
     if (isWinter) {
-      initSnowParticles();
+      if (snowflakes.length === 0) {
+        initSnowParticles();
+      }
       startSnowAnimation();
     } else {
       stopSnowAnimation();
@@ -237,8 +248,20 @@ window.HoloGarden = (function () {
 
   function resizeCanvas() {
     if (!canvas) return;
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
+    const parent = canvas.parentElement;
+    const parentW = (parent && parent.clientWidth > 50) ? parent.clientWidth : 0;
+    const parentH = (parent && parent.clientHeight > 50) ? parent.clientHeight : 0;
+    const rect = (canvas.getBoundingClientRect && typeof canvas.getBoundingClientRect === "function")
+      ? canvas.getBoundingClientRect()
+      : null;
+    const rectW = rect && rect.width > 50 ? rect.width : 0;
+    const rectH = rect && rect.height > 50 ? rect.height : 0;
+
+    const w = rectW || parentW || (canvas.clientWidth > 50 ? canvas.clientWidth : 640);
+    const h = rectH || (canvas.clientHeight > 50 ? canvas.clientHeight : (parentH || 480));
+
+    canvas.width = Math.round(w);
+    canvas.height = Math.round(h);
     if (isWinter) {
       initSnowParticles();
     }
@@ -296,14 +319,17 @@ window.HoloGarden = (function () {
     const snowBtn = getEl("holo-btn-snow");
     if (snowBtn) {
       snowBtn.onclick = (e) => {
-        e.preventDefault();
-        setWinter(!isWinter);
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        toggleSnow();
       };
     }
 
     const winterChk = getEl("holo-winter-chk");
     if (winterChk) {
-      winterChk.onchange = (e) => {
+      winterChk.onchange = () => {
         setWinter(winterChk.checked);
       };
     }
@@ -344,13 +370,19 @@ window.HoloGarden = (function () {
     }, { passive: false });
 
     window.addEventListener("touchend", () => { isDragging = false; });
+    window.addEventListener("touchcancel", () => { isDragging = false; });
   }
 
   function handleCanvasInteract(e) {
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    const rect = (canvas.getBoundingClientRect && typeof canvas.getBoundingClientRect === "function")
+      ? canvas.getBoundingClientRect()
+      : { left: 0, top: 0, width: canvas.width, height: canvas.height };
+
+    const scaleX = (rect.width > 0) ? (canvas.width / rect.width) : 1;
+    const scaleY = (rect.height > 0) ? (canvas.height / rect.height) : 1;
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    const mouseY = (e.clientY - rect.top) * scaleY;
 
     const { tileW, tileH } = getTileDimensions();
     const originX = canvas.width / 2;
@@ -643,7 +675,9 @@ window.HoloGarden = (function () {
     const areaM2 = steinCount * 2;
     const planter = hekkCount * 3 + treCount;
 
-    const query = `Jeg har tegnet hagen i HoloGarden 3D: ${areaM2} m² belegningsstein og ${planter} planter (${hekkCount * 3} hekk, ${treCount} trær). Hva blir fastpris med grunnarbeid og Reddal pukk?`;
+    const query = isWinter
+      ? `Jeg har tegnet hagen i HoloGarden 3D med vintersnøfall-simulering: ${areaM2} m² belegningsstein (ca. ${Math.round(areaM2 * 0.35)} m³ snøfall) og ${planter} planter. Hva blir fastpris for brøyting, strøing og vinterdrift?`
+      : `Jeg har tegnet hagen i HoloGarden 3D: ${areaM2} m² belegningsstein og ${planter} planter (${hekkCount * 3} hekk, ${treCount} trær). Hva blir fastpris med grunnarbeid og Reddal pukk?`;
 
     if (window.openChat) {
       window.openChat();
