@@ -11,13 +11,23 @@ window.AgroRecon = (function () {
   let droneProgress = 0; // 0 to 1
   let animId = null;
 
-  const WAYPOINTS = [
-    { x: 60, y: 80, label: "Teig T1 (Hekk)", status: "Prima vekst" },
-    { x: 180, y: 70, label: "Teig T2 (Bjørk)", status: "Optimal" },
-    { x: 300, y: 110, label: "Teig T3 (Lønn)", status: "Trenger kalk" },
-    { x: 420, y: 140, label: "Teig T4 (Vintergrønt)", status: "Frostsikret" },
-    { x: 260, y: 260, label: "Bergemoen Hub", status: "13 brøytemaskiner klar" }
+  const WAYPOINT_DEFS = [
+    { rx: 0.14, ry: 0.22, label: "Teig T1 (Hekk)", status: "Prima vekst", details: "1500m agnbøk & tuja, fukt 68%, pH 6.4" },
+    { rx: 0.36, ry: 0.18, label: "Teig T2 (Bjørk)", status: "Optimal", details: "Parklind & Tovdal hengebjørk, 8 salgsklare partier" },
+    { rx: 0.65, ry: 0.28, label: "Teig T3 (Lønn)", status: "Trenger kalk", details: "Kultivert lønn, kalkdosering planlagt uke 44" },
+    { rx: 0.86, ry: 0.35, label: "Teig T4 (Vintergrønt)", status: "Frostsikret", details: "Kompakte edelgran & furu, klar for vinterlevering" },
+    { rx: 0.50, ry: 0.72, label: "Bergemoen Hub", status: "13 brøytemaskiner klar", details: "Hovedkvarter, 12 fraksjoner Reddal Sand, døgnvakt" }
   ];
+
+  function getWaypoints(w, h) {
+    return WAYPOINT_DEFS.map(wp => ({
+      x: wp.rx * w,
+      y: wp.ry * h,
+      label: wp.label,
+      status: wp.status,
+      details: wp.details
+    }));
+  }
 
   function init(containerId) {
     const el = document.getElementById(containerId);
@@ -25,7 +35,7 @@ window.AgroRecon = (function () {
 
     el.innerHTML = `
       <div class="drone-map-wrap">
-        <div style="position:absolute;top:12px;left:14px;z-index:10;display:flex;gap:8px;flex-wrap:wrap">
+        <div class="drone-top-controls">
           <button class="holo-control-btn active" data-band="ndvi">🟢 NDVI Klorofyll-indeks</button>
           <button class="holo-control-btn" data-band="tir">🌡️ Termisk Jordfukt (TIR)</button>
           <button class="holo-control-btn" data-band="rgb">📷 Ekte Farge (RGB)</button>
@@ -41,10 +51,10 @@ window.AgroRecon = (function () {
           </div>
           <div style="margin-top:4px" id="drone-coords">GPS: 58.5412°N, 8.2319°E (Tovdal)</div>
           <div id="drone-alt">Høyde: 45.0m · Hastighet: 0.0 m/s</div>
-          <div id="drone-status" style="color:var(--neon-green)">Status: Venter på flyordre</div>
+          <div id="drone-status" style="color:var(--neon-green)">Status: Venter på flyordre (Klikk på en teig for hurtigruting)</div>
         </div>
 
-        <canvas id="recon-canvas" style="width:100%;height:100%;display:block"></canvas>
+        <canvas id="recon-canvas" style="width:100%;height:100%;display:block;cursor:pointer"></canvas>
       </div>
     `;
 
@@ -80,6 +90,28 @@ window.AgroRecon = (function () {
     if (patrolBtn) {
       patrolBtn.onclick = toggleDronePatrol;
     }
+
+    // Interactive Waypoint Click / Tap Navigation
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      const wps = getWaypoints(canvas.width, canvas.height);
+
+      for (let i = 0; i < wps.length; i++) {
+        const wp = wps[i];
+        const dist = Math.hypot(clickX - wp.x, clickY - wp.y);
+        if (dist < 35) {
+          droneProgress = i / wps.length;
+          updateDroneTelemetry();
+          if (window.ScifiHUD) {
+            ScifiHUD.playTone(950, "sine", 0.08, 0.04);
+          }
+          render();
+          break;
+        }
+      }
+    });
   }
 
   function toggleDronePatrol() {
@@ -102,7 +134,8 @@ window.AgroRecon = (function () {
         btn.classList.remove("active");
       }
       cancelAnimationFrame(animId);
-      document.getElementById("drone-status").textContent = "Status: Patrulje fullført";
+      const status = document.getElementById("drone-status");
+      if (status) status.textContent = "Status: Patrulje fullført";
       render();
     }
   }
@@ -121,14 +154,15 @@ window.AgroRecon = (function () {
     const coords = document.getElementById("drone-coords");
     const alt = document.getElementById("drone-alt");
     const status = document.getElementById("drone-status");
+    const wps = getWaypoints(canvas ? canvas.width : 500, canvas ? canvas.height : 400);
 
     const lat = (58.5412 + droneProgress * 0.02).toFixed(4);
     const lon = (8.2319 + droneProgress * 0.015).toFixed(4);
     if (coords) coords.textContent = `GPS: ${lat}°N, ${lon}°E (Tovdal felt)`;
     if (alt) alt.textContent = `Høyde: ${(42 + Math.sin(droneProgress * 20) * 3).toFixed(1)}m · Hastighet: 6.4 m/s · Batteri: 82%`;
     if (status) {
-      const idx = Math.floor(droneProgress * WAYPOINTS.length) % WAYPOINTS.length;
-      status.textContent = `Scanning: ${WAYPOINTS[idx].label} [${WAYPOINTS[idx].status}]`;
+      const idx = Math.floor(droneProgress * wps.length) % wps.length;
+      status.textContent = `Scanning: ${wps[idx].label} [${wps[idx].status} · ${wps[idx].details}]`;
     }
   }
 
@@ -141,11 +175,11 @@ window.AgroRecon = (function () {
     // Draw field terrain based on spectral band
     drawMultispectralTerrain(w, h);
 
-    // Draw Teig boundaries
+    // Draw Teig boundaries (responsive)
     drawTeigBoundaries(w, h);
 
     // Draw waypoints and labels
-    drawWaypoints();
+    drawWaypoints(w, h);
 
     // Draw drone flight path and position
     drawDroneFlight(w, h);
@@ -192,24 +226,29 @@ window.AgroRecon = (function () {
     ctx.setLineDash([4, 4]);
 
     const boxes = [
-      { x: 30, y: 40, bw: 120, bh: 100, label: "Teig T1: Hekk (1500m)" },
-      { x: 160, y: 30, bw: 130, bh: 110, label: "Teig T2: Tovdal Bjørk" },
-      { x: 300, y: 50, bw: 140, bh: 130, label: "Teig T3: Kultivert Lønn" },
-      { x: 100, y: 180, bw: 260, bh: 140, label: "Tovdal Skogsareal" }
+      { rx: 0.06, ry: 0.10, rw: 0.24, rh: 0.25, label: "Teig T1: Hekk (1500m)" },
+      { rx: 0.32, ry: 0.08, rw: 0.26, rh: 0.28, label: "Teig T2: Tovdal Bjørk" },
+      { rx: 0.60, ry: 0.14, rw: 0.28, rh: 0.30, label: "Teig T3: Kultivert Lønn" },
+      { rx: 0.18, ry: 0.45, rw: 0.52, rh: 0.34, label: "Tovdal Skogsareal" }
     ];
 
     boxes.forEach(b => {
-      ctx.strokeRect(b.x, b.y, b.bw, b.bh);
+      const bx = b.rx * w;
+      const by = b.ry * h;
+      const bw = b.rw * w;
+      const bh = b.rh * h;
+      ctx.strokeRect(bx, by, bw, bh);
       ctx.fillStyle = "rgba(0, 229, 255, 0.85)";
       ctx.font = "11px Consolas, monospace";
-      ctx.fillText(b.label, b.x + 6, b.y + 16);
+      ctx.fillText(b.label, bx + 6, by + 16);
     });
 
     ctx.setLineDash([]);
   }
 
-  function drawWaypoints() {
-    WAYPOINTS.forEach((wp, idx) => {
+  function drawWaypoints(w, h) {
+    const wps = getWaypoints(w, h);
+    wps.forEach((wp) => {
       ctx.beginPath();
       ctx.arc(wp.x, wp.y, 6, 0, Math.PI * 2);
       ctx.fillStyle = "#00ff88";
@@ -222,18 +261,19 @@ window.AgroRecon = (function () {
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "11px Consolas, monospace";
-      ctx.fillText(wp.label, wp.x + 12, wp.y + 4);
+      ctx.fillText(wp.label, wp.x + 10, wp.y + 4);
     });
   }
 
   function drawDroneFlight(w, h) {
+    const wps = getWaypoints(w, h);
     if (!isDroneFlying && droneProgress === 0) return;
 
     // Flight path connection line
     ctx.strokeStyle = "rgba(0, 229, 255, 0.6)";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    WAYPOINTS.forEach((wp, i) => {
+    wps.forEach((wp, i) => {
       if (i === 0) ctx.moveTo(wp.x, wp.y);
       else ctx.lineTo(wp.x, wp.y);
     });
@@ -241,14 +281,14 @@ window.AgroRecon = (function () {
     ctx.stroke();
 
     // Interpolate current position along waypoints
-    const totalWp = WAYPOINTS.length;
+    const totalWp = wps.length;
     const progressSegment = droneProgress * totalWp;
     const currIdx = Math.floor(progressSegment);
     const nextIdx = (currIdx + 1) % totalWp;
     const t = progressSegment - currIdx;
 
-    const p1 = WAYPOINTS[currIdx];
-    const p2 = WAYPOINTS[nextIdx];
+    const p1 = wps[currIdx];
+    const p2 = wps[nextIdx];
     const dx = p1.x + (p2.x - p1.x) * t;
     const dy = p1.y + (p2.y - p1.y) * t;
 

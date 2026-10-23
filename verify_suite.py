@@ -218,7 +218,9 @@ async function runTests() {
 
   // 11. Sci-Fi Moduler Integritet
   assert(typeof NeuroScan.runPreset === 'function', 'NeuroScan runPreset funksjon eksisterer');
+  assert(typeof NeuroScan.analyzeCanvas === 'function', 'NeuroScan analyzeCanvas funksjon eksisterer');
   assert(typeof HoloGarden.init === 'function', 'HoloGarden init funksjon eksisterer');
+  assert(typeof HoloGarden.resetGrid === 'function', 'HoloGarden resetGrid funksjon eksisterer');
   assert(typeof AgroRecon.toggleDronePatrol === 'function', 'AgroRecon toggleDronePatrol funksjon eksisterer');
 
   if (failed > 0) {

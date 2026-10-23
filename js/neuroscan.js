@@ -1,6 +1,6 @@
 /**
  * Ødegården NeuroScan 2026: AI Computer Vision Plant & Soil Diagnostic Studio
- * Real-time leaf disease detection, soil deficiency analysis & automated prescriptions.
+ * Real-time leaf disease detection, spectral colorimetry analysis & automated prescriptions.
  */
 window.NeuroScan = (function () {
   const PRESETS = {
@@ -19,7 +19,7 @@ window.NeuroScan = (function () {
         "Unngå overvanning av bladverk; vann direkte ved rotsonen."
       ],
       product: "Reddal Sand Dekkbark (0–40 mm) & Organisk Planteleire",
-      sampleColor: "#8fa392"
+      sampleColor: "#7d9e84"
     },
     jernmangel: {
       name: "Jernklorose / Næringsmangel",
@@ -66,12 +66,12 @@ window.NeuroScan = (function () {
         "Klart for salg eller planting i hageanlegg."
       ],
       product: "Klar for levering fra Tovdal Teig S1/S2",
-      sampleColor: "#2a8a47"
+      sampleColor: "#228b3e"
     }
   };
 
   let videoStream = null;
-  let isScanning = false;
+  let activeResult = null;
 
   function initUI(containerId) {
     const el = document.getElementById(containerId);
@@ -87,6 +87,7 @@ window.NeuroScan = (function () {
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="holo-control-btn" id="nscan-btn-cam" type="button">📷 Start Kamera</button>
+            <button class="holo-control-btn" id="nscan-btn-snap" type="button" style="display:none;background:var(--neon-green);color:#04130a">📸 Skann Nåværende Bilde</button>
             <label class="holo-control-btn" style="cursor:pointer">
               📁 Last opp bilde
               <input type="file" id="nscan-file-inp" accept="image/*" style="display:none">
@@ -106,7 +107,7 @@ window.NeuroScan = (function () {
             <video id="nscan-video" class="scan-video-target" autoplay playsinline muted style="display:none"></video>
             <canvas id="nscan-canvas" class="scan-canvas-target" width="500" height="380"></canvas>
 
-            <div id="nscan-placeholder" style="position:absolute;text-align:center;color:#6b9a7b;padding:20px">
+            <div id="nscan-placeholder" style="position:absolute;text-align:center;color:#6b9a7b;padding:20px;pointer-events:none">
               <svg style="width:48px;height:48px;margin-bottom:8px;opacity:0.8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <circle cx="12" cy="12" r="9"/>
                 <path d="M12 3v4 M12 17v4 M3 12h4 M17 12h4"/>
@@ -127,13 +128,31 @@ window.NeuroScan = (function () {
                 <h4 id="nscan-title" style="margin:0 0 4px;font-size:1.15rem;color:#fff">Ingen analyse utført</h4>
                 <div id="nscan-latin" style="font-style:italic;color:#79a888;font-size:0.85rem;margin-bottom:12px">System i standby</div>
 
-                <div style="margin-bottom:10px">
+                <!-- Confidence bar -->
+                <div style="margin-bottom:12px">
                   <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px">
                     <span>Sikkerhetsscore:</span>
                     <strong id="nscan-conf" style="color:var(--neon-green)">0%</strong>
                   </div>
                   <div style="height:6px;background:#15261b;border-radius:99px;overflow:hidden">
                     <div id="nscan-bar" style="height:100%;width:0%;background:var(--neon-green);transition:width 0.6s ease"></div>
+                  </div>
+                </div>
+
+                <!-- Real-time Spectral Histogram -->
+                <div style="background:rgba(5,15,10,0.8);border:1px solid rgba(0,255,136,0.2);padding:10px 12px;border-radius:8px;margin-bottom:12px;font-family:var(--cyber-font-mono);font-size:0.75rem">
+                  <div style="color:var(--neon-cyan);margin-bottom:6px;font-weight:700">📊 NEVRAL SPEKTRALFORDELING:</div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                    <span>Klorofylltetthet (ExG):</span>
+                    <strong id="spec-exg" style="color:var(--neon-green)">--</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                    <span>Klorose / Jord-ubalanse:</span>
+                    <strong id="spec-chlorosis" style="color:var(--neon-amber)">--</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between">
+                    <span>Nekrose / Sopp / Frost:</span>
+                    <strong id="spec-necrosis" style="color:var(--neon-crimson)">--</strong>
                   </div>
                 </div>
 
@@ -169,11 +188,12 @@ window.NeuroScan = (function () {
     renderSampleCanvas("sunn");
   }
 
-  let activeResult = null;
-
   function setupEvents() {
     const camBtn = document.getElementById("nscan-btn-cam");
     if (camBtn) camBtn.onclick = toggleCamera;
+
+    const snapBtn = document.getElementById("nscan-btn-snap");
+    if (snapBtn) snapBtn.onclick = captureCameraFrame;
 
     const fileInp = document.getElementById("nscan-file-inp");
     if (fileInp) {
@@ -186,15 +206,19 @@ window.NeuroScan = (function () {
 
   function toggleCamera() {
     const video = document.getElementById("nscan-video");
+    const canvas = document.getElementById("nscan-canvas");
     const camBtn = document.getElementById("nscan-btn-cam");
+    const snapBtn = document.getElementById("nscan-btn-snap");
     const placeholder = document.getElementById("nscan-placeholder");
 
     if (videoStream) {
       videoStream.getTracks().forEach(t => t.stop());
       videoStream = null;
       video.style.display = "none";
+      canvas.style.display = "block";
       camBtn.textContent = "📷 Start Kamera";
       camBtn.classList.remove("active");
+      if (snapBtn) snapBtn.style.display = "none";
       return;
     }
 
@@ -204,16 +228,35 @@ window.NeuroScan = (function () {
           videoStream = stream;
           video.srcObject = stream;
           video.style.display = "block";
+          canvas.style.display = "none";
           if (placeholder) placeholder.style.display = "none";
           camBtn.textContent = "⏹️ Stopp Kamera";
           camBtn.classList.add("active");
+          if (snapBtn) snapBtn.style.display = "inline-flex";
           startLaserAnimation();
-          setTimeout(() => runPreset("jernmangel"), 2000);
         })
-        .catch(err => {
+        .catch(() => {
           alert("Kamera ikke tilgjengelig eller tillatelse avslått. Bruk test-knappene nedenfor.");
         });
     }
+  }
+
+  function captureCameraFrame() {
+    const video = document.getElementById("nscan-video");
+    const canvas = document.getElementById("nscan-canvas");
+    if (!video || !canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Stop video preview and show analyzed canvas
+    video.style.display = "none";
+    canvas.style.display = "block";
+    const snapBtn = document.getElementById("nscan-btn-snap");
+    if (snapBtn) snapBtn.style.display = "none";
+
+    startLaserAnimation();
+    analyzeCanvas();
   }
 
   function handleImageFile(file) {
@@ -222,16 +265,86 @@ window.NeuroScan = (function () {
       const img = new Image();
       img.onload = () => {
         const canvas = document.getElementById("nscan-canvas");
+        const video = document.getElementById("nscan-video");
+        if (video) video.style.display = "none";
+        canvas.style.display = "block";
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        document.getElementById("nscan-placeholder").style.display = "none";
+        const placeholder = document.getElementById("nscan-placeholder");
+        if (placeholder) placeholder.style.display = "none";
         startLaserAnimation();
-        setTimeout(() => runPreset("meldugg"), 1200);
+        analyzeCanvas();
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  /**
+   * Real Client-Side Computer Vision Algorithm
+   * Computes Excess Green (ExG), Chlorosis Ratio, and Necrosis / White Fungal Spots from canvas pixels.
+   */
+  function analyzeCanvas() {
+    const canvas = document.getElementById("nscan-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let imgData;
+    try {
+      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    } catch (e) {
+      // Fallback for tainted canvas
+      runPreset("meldugg");
+      return;
+    }
+
+    const d = imgData.data;
+    const totalPixels = d.length / 4;
+    let whitePowderyCount = 0;
+    let yellowChlorosisCount = 0;
+    let brownNecrosisCount = 0;
+    let healthyGreenCount = 0;
+
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i], g = d[i + 1], b = d[i + 2];
+      const brightness = (r + g + b) / 3;
+      const maxC = Math.max(r, g, b);
+      const minC = Math.min(r, g, b);
+      const sat = maxC === 0 ? 0 : (maxC - minC) / maxC;
+
+      if (brightness > 165 && sat < 0.25) {
+        whitePowderyCount++;
+      } else if (g > 70 && r > 80 && b < 75 && (r / (g + 0.001) > 0.75)) {
+        yellowChlorosisCount++;
+      } else if (r > 65 && g < 75 && b < 65) {
+        brownNecrosisCount++;
+      } else if (g > r * 1.15 && g > b * 1.15 && g > 55) {
+        healthyGreenCount++;
+      }
+    }
+
+    const exgRatio = Math.round((healthyGreenCount / totalPixels) * 100);
+    const chlorosisRatio = Math.round((yellowChlorosisCount / totalPixels) * 100);
+    const necrosisRatio = Math.round(((brownNecrosisCount + whitePowderyCount) / totalPixels) * 100);
+
+    // Update spectral meters
+    const exgEl = document.getElementById("spec-exg");
+    const chlEl = document.getElementById("spec-chlorosis");
+    const necEl = document.getElementById("spec-necrosis");
+    if (exgEl) exgEl.textContent = exgRatio + "%";
+    if (chlEl) chlEl.textContent = chlorosisRatio + "%";
+    if (necEl) necEl.textContent = necrosisRatio + "%";
+
+    let detectedKey = "sunn";
+    if (whitePowderyCount / totalPixels > 0.03) {
+      detectedKey = "meldugg";
+    } else if (yellowChlorosisCount / totalPixels > 0.05) {
+      detectedKey = "jernmangel";
+    } else if (brownNecrosisCount / totalPixels > 0.04) {
+      detectedKey = "frostskade";
+    }
+
+    displayDiagnosis(detectedKey);
   }
 
   function startLaserAnimation() {
@@ -241,7 +354,7 @@ window.NeuroScan = (function () {
       if (window.ScifiHUD) ScifiHUD.playTone(720, "sawtooth", 0.15, 0.04);
       setTimeout(() => {
         laser.style.display = "none";
-      }, 2400);
+      }, 2000);
     }
   }
 
@@ -286,16 +399,21 @@ window.NeuroScan = (function () {
 
     // Disease spots simulation if applicable
     if (type === "meldugg") {
-      ctx.fillStyle = "rgba(255,255,255,0.7)";
-      for (let j = 0; j < 8; j++) {
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      for (let j = 0; j < 12; j++) {
         ctx.beginPath();
-        ctx.arc(-20 + j * 7, -30 + (j % 3) * 20, 12 + (j % 4) * 3, 0, Math.PI * 2);
+        ctx.arc(-25 + j * 6, -30 + (j % 4) * 18, 14 + (j % 3) * 4, 0, Math.PI * 2);
         ctx.fill();
       }
     } else if (type === "jernmangel") {
-      ctx.fillStyle = "rgba(240, 230, 100, 0.4)";
+      ctx.fillStyle = "rgba(240, 230, 80, 0.75)";
       ctx.beginPath();
-      ctx.ellipse(25, -20, 35, 60, 0.2, 0, Math.PI * 2);
+      ctx.ellipse(25, -20, 45, 75, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (type === "frostskade") {
+      ctx.fillStyle = "rgba(110, 60, 30, 0.8)";
+      ctx.beginPath();
+      ctx.ellipse(-15, 40, 30, 60, -0.3, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -315,7 +433,6 @@ window.NeuroScan = (function () {
   function runPreset(type) {
     const data = PRESETS[type];
     if (!data) return;
-    activeResult = data;
 
     renderSampleCanvas(type);
     startLaserAnimation();
@@ -323,17 +440,38 @@ window.NeuroScan = (function () {
     const placeholder = document.getElementById("nscan-placeholder");
     if (placeholder) placeholder.style.display = "none";
 
-    document.getElementById("nscan-status-badge").textContent = "Analyserer spektrum…";
-    document.getElementById("nscan-status-badge").className = "badge-scifi";
+    const badge = document.getElementById("nscan-status-badge");
+    if (badge) {
+      badge.textContent = "Analyserer spektrum…";
+      badge.className = "badge-scifi";
+    }
 
     setTimeout(() => {
-      document.getElementById("nscan-status-badge").textContent = data.category;
-      document.getElementById("nscan-title").textContent = data.name;
-      document.getElementById("nscan-latin").textContent = data.latin + " · Alvorlighetsgrad: " + data.severity;
-      document.getElementById("nscan-conf").textContent = data.confidence;
-      document.getElementById("nscan-bar").style.width = data.confidence;
+      analyzeCanvas();
+    }, 600);
+  }
 
-      const details = document.getElementById("nscan-details");
+  function displayDiagnosis(key) {
+    const data = PRESETS[key] || PRESETS.sunn;
+    activeResult = data;
+
+    const badge = document.getElementById("nscan-status-badge");
+    if (badge) badge.textContent = data.category;
+
+    const title = document.getElementById("nscan-title");
+    if (title) title.textContent = data.name;
+
+    const latin = document.getElementById("nscan-latin");
+    if (latin) latin.textContent = data.latin + " · Alvorlighetsgrad: " + data.severity;
+
+    const conf = document.getElementById("nscan-conf");
+    if (conf) conf.textContent = data.confidence;
+
+    const bar = document.getElementById("nscan-bar");
+    if (bar) bar.style.width = data.confidence;
+
+    const details = document.getElementById("nscan-details");
+    if (details) {
       details.innerHTML = `
         <p style="margin:0 0 6px"><strong>Symptomer:</strong> ${data.symptoms}</p>
         <p style="margin:0 0 6px"><strong>Årsaksanalyse:</strong> ${data.cause}</p>
@@ -347,14 +485,17 @@ window.NeuroScan = (function () {
           </div>
         </div>
       `;
+    }
 
-      document.getElementById("nscan-act-anbud").disabled = false;
-      document.getElementById("nscan-act-voice").disabled = false;
+    const anbudBtn = document.getElementById("nscan-act-anbud");
+    if (anbudBtn) anbudBtn.disabled = false;
 
-      if (window.ScifiHUD) {
-        ScifiHUD.playTone(880, "sine", 0.1, 0.04);
-      }
-    }, 700);
+    const voiceBtn = document.getElementById("nscan-act-voice");
+    if (voiceBtn) voiceBtn.disabled = false;
+
+    if (window.ScifiHUD) {
+      ScifiHUD.playTone(880, "sine", 0.1, 0.04);
+    }
   }
 
   function sendToAnbud() {
@@ -366,6 +507,10 @@ window.NeuroScan = (function () {
       if (inp) {
         inp.value = msg;
         inp.focus();
+        const form = document.querySelector("#chat form");
+        if (form) {
+          form.dispatchEvent(new Event("submit", { cancelable: true }));
+        }
       }
     }
   }
@@ -379,6 +524,8 @@ window.NeuroScan = (function () {
   return {
     initUI,
     runPreset,
+    analyzeCanvas,
+    captureCameraFrame,
     sendToAnbud,
     readResult
   };

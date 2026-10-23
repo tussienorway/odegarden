@@ -6,10 +6,10 @@
 window.HoloGarden = (function () {
   let canvas = null;
   let ctx = null;
-  let gridW = 10;
-  let gridH = 8;
-  const TILE_W = 54;
-  const TILE_H = 27;
+  const gridW = 10;
+  const gridH = 8;
+  const BASE_TILE_W = 54;
+  const BASE_TILE_H = 27;
 
   // Garden state: grid cells
   // cell types: 'empty', 'stein', 'hekk', 'tre', 'bark', 'dam', 'lys'
@@ -20,6 +20,16 @@ window.HoloGarden = (function () {
   let isWinter = false;
   let isDragging = false;
 
+  function getTileDimensions() {
+    const w = canvas ? canvas.width : 500;
+    const scale = Math.min(1, Math.max(0.55, (w - 20) / 520));
+    return {
+      tileW: Math.round(BASE_TILE_W * scale),
+      tileH: Math.round(BASE_TILE_H * scale),
+      scale
+    };
+  }
+
   function init(containerId) {
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -28,26 +38,28 @@ window.HoloGarden = (function () {
       <div class="holo-viewport">
         <!-- Floating HUD controls -->
         <div class="holo-overlay-controls">
-          <button class="holo-control-btn active" data-tool="stein">🧱 Belegningsstein</button>
-          <button class="holo-control-btn" data-tool="hekk">🌲 Tujahekk</button>
-          <button class="holo-control-btn" data-tool="tre">🌳 Tovdal Bjørk</button>
-          <button class="holo-control-btn" data-tool="bark">🍂 Reddal Bark</button>
-          <button class="holo-control-btn" data-tool="dam">💧 Vannspeil</button>
-          <button class="holo-control-btn" data-tool="lys">💡 Utebelysning</button>
-          <button class="holo-control-btn" data-tool="erase" style="color:#ff6666">🧹 Fjern</button>
-          <button class="holo-control-btn" id="holo-btn-clear">🔄 Nullstill</button>
+          <div class="holo-tools-row">
+            <button class="holo-control-btn active" data-tool="stein">🧱 Belegningsstein</button>
+            <button class="holo-control-btn" data-tool="hekk">🌲 Tujahekk</button>
+            <button class="holo-control-btn" data-tool="tre">🌳 Tovdal Bjørk</button>
+            <button class="holo-control-btn" data-tool="bark">🍂 Reddal Bark</button>
+            <button class="holo-control-btn" data-tool="dam">💧 Vannspeil</button>
+            <button class="holo-control-btn" data-tool="lys">💡 Utebelysning</button>
+            <button class="holo-control-btn" data-tool="erase" style="color:#ff6666">🧹 Fjern</button>
+            <button class="holo-control-btn" id="holo-btn-clear">🔄 Nullstill</button>
+          </div>
+
+          <div class="holo-sun-bar">
+            <label for="holo-sun-slider">☀️ Solbane (58.3°N Grimstad):</label>
+            <input type="range" id="holo-sun-slider" min="6" max="22" step="0.5" value="14">
+            <span id="holo-sun-label">14:00</span>
+            <label style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;cursor:pointer">
+              <input type="checkbox" id="holo-winter-chk"> ❄️ Snøsimulering
+            </label>
+          </div>
         </div>
 
-        <div style="position:absolute;top:54px;left:14px;z-index:10;display:flex;gap:10px;align-items:center;background:rgba(4,15,9,0.85);padding:6px 14px;border-radius:8px;border:1px solid rgba(0,255,136,0.3);font-family:var(--cyber-font-mono);font-size:0.75rem;color:#fff">
-          <label for="holo-sun-slider">☀️ Solbane (58.3°N Grimstad):</label>
-          <input type="range" id="holo-sun-slider" min="6" max="22" step="0.5" value="14" style="width:110px">
-          <span id="holo-sun-label">14:00</span>
-          <label style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;cursor:pointer">
-            <input type="checkbox" id="holo-winter-chk"> ❄️ Snøsimulering
-          </label>
-        </div>
-
-        <canvas id="holo-canvas" style="width:100%;height:100%;display:block;cursor:crosshair"></canvas>
+        <canvas id="holo-canvas" style="width:100%;height:100%;display:block;cursor:crosshair;touch-action:none"></canvas>
 
         <!-- Dynamic BOM & Telemetry Stats HUD -->
         <div class="holo-hud-stats">
@@ -145,28 +157,58 @@ window.HoloGarden = (function () {
       toAnbudBtn.onclick = sendHoloToAnbud;
     }
 
-    // Canvas click & drag interaction
+    // Canvas click & drag interaction (Mouse)
     canvas.addEventListener("mousedown", handleCanvasInteract);
     canvas.addEventListener("mousemove", (e) => {
       if (isDragging) handleCanvasInteract(e);
     });
     window.addEventListener("mouseup", () => { isDragging = false; });
+
+    // Touch support for mobile devices and tablets
+    function getTouchCoords(e) {
+      const touch = e.touches[0] || (e.changedTouches && e.changedTouches[0]);
+      if (!touch) return null;
+      return { clientX: touch.clientX, clientY: touch.clientY };
+    }
+
+    canvas.addEventListener("touchstart", (e) => {
+      const pos = getTouchCoords(e);
+      if (pos) {
+        e.preventDefault();
+        handleCanvasInteract(pos);
+      }
+    }, { passive: false });
+
+    canvas.addEventListener("touchmove", (e) => {
+      const pos = getTouchCoords(e);
+      if (pos && isDragging) {
+        e.preventDefault();
+        handleCanvasInteract(pos);
+      }
+    }, { passive: false });
+
+    window.addEventListener("touchend", () => { isDragging = false; });
   }
 
   function handleCanvasInteract(e) {
+    if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    const { tileW, tileH } = getTileDimensions();
     const originX = canvas.width / 2;
-    const originY = canvas.height / 3;
+    const originY = Math.max(70, canvas.height * 0.28);
 
     // Convert screen coordinates to isometric grid (x, y)
     const dx = mouseX - originX;
     const dy = mouseY - originY;
 
-    const isoX = Math.floor((dx / (TILE_W / 2) + dy / (TILE_H / 2)) / 2);
-    const isoY = Math.floor((dy / (TILE_H / 2) - dx / (TILE_W / 2)) / 2);
+    const hw = tileW / 2;
+    const hh = tileH / 2;
+
+    const isoX = Math.floor((dx / hw + dy / hh) / 2);
+    const isoY = Math.floor((dy / hh - dx / hw) / 2);
 
     if (isoX >= 0 && isoX < gridW && isoY >= 0 && isoY < gridH) {
       grid[isoY][isoX] = currentTool === "erase" ? "empty" : currentTool;
@@ -231,16 +273,17 @@ window.HoloGarden = (function () {
     if (!ctx || !canvas) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const { tileW, tileH, scale } = getTileDimensions();
     const originX = canvas.width / 2;
-    const originY = canvas.height / 3;
+    const originY = Math.max(70, canvas.height * 0.28);
 
     // Draw ambient holographic grid background
-    drawHoloGridBackground(originX, originY);
+    drawHoloGridBackground(originX, originY, tileW, tileH);
 
     // Calculate solar shadow vector for Grimstad (58.3°N)
     // sunHour from 6 to 22. Noon is 12.
     const sunAngle = ((sunHour - 12) / 8) * (Math.PI / 3);
-    const shadowLen = Math.max(12, Math.abs(sunHour - 13) * 14);
+    const shadowLen = Math.max(10, Math.abs(sunHour - 13) * 12) * scale;
     const shadowDx = Math.sin(sunAngle) * shadowLen;
     const shadowDy = Math.cos(sunAngle) * (shadowLen * 0.4);
 
@@ -248,33 +291,33 @@ window.HoloGarden = (function () {
     for (let y = 0; y < gridH; y++) {
       for (let x = 0; x < gridW; x++) {
         const type = grid[y][x];
-        const screenX = originX + (x - y) * (TILE_W / 2);
-        const screenY = originY + (x + y) * (TILE_H / 2);
+        const screenX = originX + (x - y) * (tileW / 2);
+        const screenY = originY + (x + y) * (tileH / 2);
 
-        drawTileBase(screenX, screenY, type);
+        drawTileBase(screenX, screenY, type, tileW, tileH);
 
         // Draw Shadows
         if (type === "tre" || type === "hekk" || type === "lys") {
-          drawObjectShadow(screenX, screenY, type, shadowDx, shadowDy);
+          drawObjectShadow(screenX, screenY, type, shadowDx, shadowDy, tileH, scale);
         }
 
         // Draw 3D structures on top
         if (type !== "empty") {
-          drawTileObject(screenX, screenY, type);
+          drawTileObject(screenX, screenY, type, tileH, scale);
         }
       }
     }
   }
 
-  function drawHoloGridBackground(ox, oy) {
+  function drawHoloGridBackground(ox, oy, tileW, tileH) {
     ctx.strokeStyle = "rgba(0, 255, 136, 0.12)";
     ctx.lineWidth = 1;
 
     for (let y = 0; y <= gridH; y++) {
-      const x1 = ox + (0 - y) * (TILE_W / 2);
-      const y1 = oy + (0 + y) * (TILE_H / 2);
-      const x2 = ox + (gridW - y) * (TILE_W / 2);
-      const y2 = oy + (gridW + y) * (TILE_H / 2);
+      const x1 = ox + (0 - y) * (tileW / 2);
+      const y1 = oy + (0 + y) * (tileH / 2);
+      const x2 = ox + (gridW - y) * (tileW / 2);
+      const y2 = oy + (gridW + y) * (tileH / 2);
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
@@ -282,10 +325,10 @@ window.HoloGarden = (function () {
     }
 
     for (let x = 0; x <= gridW; x++) {
-      const x1 = ox + (x - 0) * (TILE_W / 2);
-      const y1 = oy + (x + 0) * (TILE_H / 2);
-      const x2 = ox + (x - gridH) * (TILE_W / 2);
-      const y2 = oy + (x + gridH) * (TILE_H / 2);
+      const x1 = ox + (x - 0) * (tileW / 2);
+      const y1 = oy + (x + 0) * (tileH / 2);
+      const x2 = ox + (x - gridH) * (tileW / 2);
+      const y2 = oy + (x + gridH) * (tileH / 2);
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
@@ -293,13 +336,13 @@ window.HoloGarden = (function () {
     }
   }
 
-  function drawTileBase(x, y, type) {
+  function drawTileBase(x, y, type, tileW, tileH) {
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(x, y);
-    ctx.lineTo(x + TILE_W / 2, y + TILE_H / 2);
-    ctx.lineTo(x, y + TILE_H);
-    ctx.lineTo(x - TILE_W / 2, y + TILE_H / 2);
+    ctx.lineTo(x + tileW / 2, y + tileH / 2);
+    ctx.lineTo(x, y + tileH);
+    ctx.lineTo(x - tileW / 2, y + tileH / 2);
     ctx.closePath();
 
     if (isWinter) {
@@ -320,31 +363,31 @@ window.HoloGarden = (function () {
     ctx.restore();
   }
 
-  function drawObjectShadow(x, y, type, dx, dy) {
+  function drawObjectShadow(x, y, type, dx, dy, tileH, scale) {
     ctx.save();
     ctx.beginPath();
     const cx = x;
-    const cy = y + TILE_H / 2;
-    const r = type === "tre" ? 24 : 14;
+    const cy = y + tileH / 2;
+    const r = (type === "tre" ? 22 : 13) * scale;
     ctx.ellipse(cx + dx, cy + dy, r, r * 0.4, 0, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
     ctx.fill();
     ctx.restore();
   }
 
-  function drawTileObject(x, y, type) {
+  function drawTileObject(x, y, type, tileH, scale) {
     const cx = x;
-    const cy = y + TILE_H / 2;
+    const cy = y + tileH / 2;
 
     ctx.save();
     if (type === "tre") {
       // Trunk
       ctx.fillStyle = "#5c4033";
-      ctx.fillRect(cx - 3, cy - 35, 6, 35);
+      ctx.fillRect(cx - 3 * scale, cy - 35 * scale, 6 * scale, 35 * scale);
 
       // Foliage crown
       ctx.beginPath();
-      ctx.arc(cx, cy - 45, 22, 0, Math.PI * 2);
+      ctx.arc(cx, cy - 45 * scale, 20 * scale, 0, Math.PI * 2);
       ctx.fillStyle = isWinter ? "#cbd7d9" : "#2d8a4e";
       ctx.fill();
       ctx.strokeStyle = "rgba(0,255,136,0.3)";
@@ -352,9 +395,9 @@ window.HoloGarden = (function () {
     } else if (type === "hekk") {
       // Conifer hedge cone
       ctx.beginPath();
-      ctx.moveTo(cx, cy - 32);
-      ctx.lineTo(cx + 14, cy);
-      ctx.lineTo(cx - 14, cy);
+      ctx.moveTo(cx, cy - 30 * scale);
+      ctx.lineTo(cx + 13 * scale, cy);
+      ctx.lineTo(cx - 13 * scale, cy);
       ctx.closePath();
       ctx.fillStyle = isWinter ? "#8fa398" : "#1f6e37";
       ctx.fill();
@@ -363,24 +406,24 @@ window.HoloGarden = (function () {
     } else if (type === "stein") {
       // Paving texture lines
       ctx.strokeStyle = "rgba(255,255,255,0.15)";
-      ctx.strokeRect(cx - 8, cy - 4, 16, 8);
+      ctx.strokeRect(cx - 7 * scale, cy - 3.5 * scale, 14 * scale, 7 * scale);
     } else if (type === "lys") {
       // Outdoor bollard light
       ctx.fillStyle = "#ffcc00";
-      ctx.fillRect(cx - 2, cy - 14, 4, 14);
+      ctx.fillRect(cx - 2 * scale, cy - 13 * scale, 4 * scale, 13 * scale);
       ctx.beginPath();
-      ctx.arc(cx, cy - 14, 5, 0, Math.PI * 2);
+      ctx.arc(cx, cy - 13 * scale, 4.5 * scale, 0, Math.PI * 2);
       ctx.fillStyle = "#fff5a0";
       ctx.fill();
       // Glow
       ctx.beginPath();
-      ctx.arc(cx, cy - 14, 16, 0, Math.PI * 2);
+      ctx.arc(cx, cy - 13 * scale, 14 * scale, 0, Math.PI * 2);
       ctx.fillStyle = "rgba(255, 230, 100, 0.2)";
       ctx.fill();
     } else if (type === "dam") {
       // Water ripple
       ctx.beginPath();
-      ctx.ellipse(cx, cy, 14, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, cy, 13 * scale, 6.5 * scale, 0, 0, Math.PI * 2);
       ctx.strokeStyle = "rgba(0, 229, 255, 0.5)";
       ctx.lineWidth = 1.5;
       ctx.stroke();
@@ -412,6 +455,10 @@ window.HoloGarden = (function () {
       if (inp) {
         inp.value = query;
         inp.focus();
+        const form = document.querySelector("#chat form");
+        if (form) {
+          form.dispatchEvent(new Event("submit", { cancelable: true }));
+        }
       }
     }
   }

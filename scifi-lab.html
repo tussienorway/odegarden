@@ -48,7 +48,7 @@
           <span class="scifi-reticle" style="border-color:var(--neon-green);color:var(--neon-green);background:rgba(0,255,136,0.08)">MODUL 1 // INTERAKTIV 3D</span>
           <h2 style="margin:4px 0 0;font-size:1.6rem">HoloGarden 3D: Holografisk Landskapsarkitekt</h2>
           <p style="margin:4px 0 0;color:#79a888;font-size:0.92rem">
-            Tegn belegningsstein, hekk og trær direkte i nettleseren. Simuler solbane og skyggekast for Grimstad (58.3°N) eller test vintersnøfall.
+            Tegn belegningsstein, hekk og trær direkte i nettleseren med touch eller mus. Simuler solbane og skyggekast for Grimstad (58.3°N) eller test vintersnøfall.
           </p>
         </div>
         <span class="badge-scifi">Sanntids WebGL Canvas</span>
@@ -64,7 +64,7 @@
           <span class="scifi-reticle" style="border-color:var(--neon-cyan);color:var(--neon-cyan);background:rgba(0,229,255,0.08)">MODUL 2 // COMPUTER VISION</span>
           <h2 style="margin:4px 0 0;font-size:1.6rem">NeuroScan 2026: Diagnostisk Plantelaboratorium</h2>
           <p style="margin:4px 0 0;color:#79a888;font-size:0.92rem">
-            Bruk enhetens kamera eller testeksempler for å analysere blader, soppangrep, jernmangel og frostskader med automatisk Ødegården-resept.
+            Bruk enhetens kamera eller bildeopplasting for å analysere blader, soppangrep, jernmangel og frostskader med matematisk spektralanalyse og automatisk Ødegården-resept.
           </p>
         </div>
         <span class="badge-scifi" style="border-color:var(--neon-cyan);color:var(--neon-cyan)">Nevral Spektralanalyse</span>
@@ -80,7 +80,7 @@
           <span class="scifi-reticle" style="border-color:var(--neon-amber);color:var(--neon-amber);background:rgba(255,184,0,0.08)">MODUL 3 // AUTONOM TELEMETRI</span>
           <h2 style="margin:4px 0 0;font-size:1.6rem">AgroRecon: Satellitt & Drone Telemetri (Tovdal & Bergemoen)</h2>
           <p style="margin:4px 0 0;color:#79a888;font-size:0.92rem">
-            Veksle mellom klorofyll-indeks (NDVI), termisk markfuktighet (TIR) og send ut autonom rekognoseringsdrone over Teig 1–4.
+            Veksle mellom klorofyll-indeks (NDVI), termisk markfuktighet (TIR) og send ut autonom rekognoseringsdrone over Teig 1–4. Klikk på hvilken som helst teig for ruting.
           </p>
         </div>
         <span class="badge-scifi" style="border-color:var(--neon-amber);color:var(--neon-amber)">DJI Matrice 350 Multispectral</span>
@@ -96,33 +96,59 @@
           <span class="scifi-reticle" style="border-color:var(--neon-crimson);color:var(--neon-crimson);background:rgba(255,51,102,0.08)">MODUL 4 // PREDIKTIV VINTERDRIFT</span>
           <h2 style="margin:4px 0 0;font-size:1.6rem">Agder Frost-Sentinel: Mikroklimaprediksjon & Flåtestyring</h2>
           <p style="margin:4px 0 0;color:#79a888;font-size:0.92rem">
-            Automatisert strø- og brøytealgoritme for Grimstad, Fevik og Tovdal basert på bakketemperatur vs lufttemperatur.
+            Interaktiv strø- og brøytealgoritme for Grimstad, Fevik og Tovdal. Juster simuleringsforholdene for å se nøyaktig salt/singeldosering og maskinallokering.
           </p>
         </div>
         <span class="badge-scifi" style="border-color:var(--neon-crimson);color:var(--neon-crimson)">13 Brøytemaskiner Beredskap</span>
+      </div>
+
+      <!-- Interactive Weather & Temp Controller -->
+      <div class="sentinel-control-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px">
+          <div>
+            <label for="sentinel-temp-slider" style="font-weight:700;color:#fff">Simuler Lufttemperatur:</label>
+            <input type="range" id="sentinel-temp-slider" min="-15" max="10" step="0.5" value="1.4" style="width:140px;margin:0 10px;vertical-align:middle">
+            <span id="sentinel-temp-disp" style="color:var(--neon-green);font-weight:900;font-size:1.1rem">+1.4°C</span>
+          </div>
+          <div>
+            <span style="font-size:0.8rem;color:#79a888">Testscenarier:</span>
+            <div class="sentinel-pills" style="display:inline-flex;margin:0">
+              <button class="sentinel-pill active" type="button" onclick="setSentinelScenario('mild')">Mildt (+1.4°C)</button>
+              <button class="sentinel-pill" type="button" onclick="setSentinelScenario('frost')">Rimfrost (-1.0°C)</button>
+              <button class="sentinel-pill" type="button" onclick="setSentinelScenario('glatt')">Underkjølt regn (-2.5°C)</button>
+              <button class="sentinel-pill" type="button" onclick="setSentinelScenario('storm')">Snøfall (-6.0°C)</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px">
         <div style="background:rgba(5,15,10,0.7);border:1px solid rgba(0,255,136,0.2);border-radius:10px;padding:16px">
           <span class="note" style="color:#79a888">Bakketemperatur Bergemoen</span>
           <div style="font-size:1.6rem;font-weight:900;color:var(--neon-green);margin:4px 0" id="frost-temp-val">+1.4°C</div>
-          <small style="color:#9ab5a2">Telefare neste 48t: <strong>Lav (0.2%)</strong></small>
+          <small id="frost-risk" style="color:#9ab5a2">Telefare neste 48t: <strong>Lav (0.2%)</strong></small>
         </div>
         <div style="background:rgba(5,15,10,0.7);border:1px solid rgba(0,255,136,0.2);border-radius:10px;padding:16px">
           <span class="note" style="color:#79a888">Beregnet strødosering (m²)</span>
-          <div style="font-size:1.6rem;font-weight:900;color:var(--neon-cyan);margin:4px 0">25 g/m²</div>
-          <small style="color:#9ab5a2">Fraksjon: <strong>2–4 mm Reddal strøsingel</strong></small>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--neon-cyan);margin:4px 0" id="frost-dose-val">25 g/m²</div>
+          <small id="frost-frac-val" style="color:#9ab5a2">Fraksjon: <strong>2–4 mm Reddal strøsingel</strong></small>
         </div>
         <div style="background:rgba(5,15,10,0.7);border:1px solid rgba(0,255,136,0.2);border-radius:10px;padding:16px">
           <span class="note" style="color:#79a888">Aktiv flåteberedskap</span>
-          <div style="font-size:1.6rem;font-weight:900;color:var(--neon-amber);margin:4px 0">13 av 13</div>
-          <small style="color:#9ab5a2">Status: <strong>Mekanikervakt påkallingsklar</strong></small>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--neon-amber);margin:4px 0" id="frost-fleet-val">13 av 13</div>
+          <small id="frost-status-val" style="color:#9ab5a2">Status: <strong>Mekanikervakt påkallingsklar</strong></small>
         </div>
         <div style="background:rgba(5,15,10,0.7);border:1px solid rgba(0,255,136,0.2);border-radius:10px;padding:16px">
           <span class="note" style="color:#79a888">AI Anbuds-effektivitet</span>
           <div style="font-size:1.6rem;font-weight:900;color:#fff;margin:4px 0">0.4 sek</div>
           <small style="color:#9ab5a2">Lokal inferens på RTX 5060 Ti</small>
         </div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;justify-content:flex-end">
+        <button class="btn alt" type="button" onclick="sendSentinelToAnbud()" style="font-size:0.85rem">
+          ❄️ Be om fastpris på brøyteavtale basert på mikroklima
+        </button>
       </div>
     </div>
 
@@ -230,14 +256,91 @@
 <script src="js/agrorecon.js"></script>
 <script src="js/consent.js"></script>
 <script src="js/analytics-config.js"></script>
+<script src="js/main.js" defer></script>
 <script>
+  function updateSentinel(temp) {
+    const val = parseFloat(temp);
+    const disp = document.getElementById("sentinel-temp-disp");
+    const frostTemp = document.getElementById("frost-temp-val");
+    const risk = document.getElementById("frost-risk");
+    const dose = document.getElementById("frost-dose-val");
+    const frac = document.getElementById("frost-frac-val");
+    const fleet = document.getElementById("frost-fleet-val");
+    const status = document.getElementById("frost-status-val");
+
+    const sign = val > 0 ? "+" : "";
+    if (disp) disp.textContent = `${sign}${val.toFixed(1)}°C`;
+    if (frostTemp) frostTemp.textContent = `${sign}${val.toFixed(1)}°C`;
+
+    if (val > 1.5) {
+      if (risk) risk.innerHTML = 'Telefare neste 48t: <strong>Lav (0.1%)</strong>';
+      if (dose) dose.textContent = '0 g/m²';
+      if (frac) frac.innerHTML = 'Fraksjon: <strong>Ingen tiltak kreves</strong>';
+      if (fleet) fleet.textContent = '0 av 13';
+      if (status) status.innerHTML = 'Status: <strong>Normalberedskap (Standby)</strong>';
+    } else if (val >= -0.5) {
+      if (risk) risk.innerHTML = 'Telefare neste 48t: <strong>Moderat (22%)</strong>';
+      if (dose) dose.textContent = '15 g/m²';
+      if (frac) frac.innerHTML = 'Fraksjon: <strong>2–4 mm Reddal strøsingel</strong>';
+      if (fleet) fleet.textContent = '4 av 13';
+      if (status) status.innerHTML = 'Status: <strong>Forebyggende strøing E-18 & Fevik</strong>';
+    } else if (val >= -3.5) {
+      if (risk) risk.innerHTML = 'Telefare neste 48t: <strong>Høy (78%)</strong>';
+      if (dose) dose.textContent = '35 g/m²';
+      if (frac) frac.innerHTML = 'Fraksjon: <strong>2–4 mm Reddal strøsingel (vasket)</strong>';
+      if (fleet) fleet.textContent = '9 av 13';
+      if (status) status.innerHTML = 'Status: <strong>Aktiv glattebekjempelse</strong>';
+    } else {
+      if (risk) risk.innerHTML = 'Telefare neste 48t: <strong>Kritisk (98%)</strong>';
+      if (dose) dose.textContent = '50 g/m² + brøyting';
+      if (frac) frac.innerHTML = 'Fraksjon: <strong>4–8 mm knust pukk + magnesiumlake</strong>';
+      if (fleet) fleet.textContent = '13 av 13';
+      if (status) status.innerHTML = 'Status: <strong>Full brøyteutrykning i Agder</strong>';
+    }
+  }
+
+  function setSentinelScenario(scen) {
+    document.querySelectorAll(".sentinel-pill").forEach(p => p.classList.remove("active"));
+    const btn = event && event.target;
+    if (btn) btn.classList.add("active");
+
+    const slider = document.getElementById("sentinel-temp-slider");
+    let target = 1.4;
+    if (scen === "frost") target = -1.0;
+    else if (scen === "glatt") target = -2.5;
+    else if (scen === "storm") target = -6.0;
+
+    if (slider) slider.value = target;
+    updateSentinel(target);
+    if (window.ScifiHUD) ScifiHUD.playTone(target < 0 ? 440 : 660, "sine", 0.06);
+  }
+
+  function sendSentinelToAnbud() {
+    const temp = document.getElementById("sentinel-temp-slider")?.value || "-2";
+    const dose = document.getElementById("frost-dose-val")?.textContent || "35 g/m²";
+    const query = `Jeg ønsker tilbud på fast vinterbrøyte- og strøavtale. Simulert mikroklima: ${temp}°C, beregnet tiltak: ${dose} med Reddal singel. Vi har ca. 450 m² parkeringsplass og adkomstvei.`;
+
+    if (window.openChat) {
+      window.openChat();
+      const inp = document.querySelector("#chat input");
+      if (inp) {
+        inp.value = query;
+        inp.focus();
+        const form = document.querySelector("#chat form");
+        if (form) form.dispatchEvent(new Event("submit", { cancelable: true }));
+      }
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     if (window.HoloGarden) HoloGarden.init("hologarden-container");
     if (window.NeuroScan) NeuroScan.initUI("neuroscan-container");
     if (window.AgroRecon) AgroRecon.init("agrorecon-container");
 
-    const yr = document.getElementById("yr");
-    if (yr) yr.textContent = new Date().getFullYear();
+    const slider = document.getElementById("sentinel-temp-slider");
+    if (slider) {
+      slider.oninput = (e) => updateSentinel(e.target.value);
+    }
   });
 </script>
 </body></html>
