@@ -70,15 +70,39 @@
 <div class="wrap">
   <div class="topbar">
     <div>
-      <span class="badge">FERDIGBYGD FOR AGDER EL INSTALLASJON ARENDAL AS (ORG.NR 993360953)</span>
-      <div style="font-size:13px; color:var(--muted); margin-top:4px;">Utarbeidet av MajereAI Studio (Grimstad) · Gratis kodefiks + Live Priskalkulator-prototype</div>
+      <span class="badge">ALLEREDE BYGGET FOR AGDER EL INSTALLASJON ARENDAL AS · ORG.NR 993360953</span>
+      <div style="font-size:13px; color:var(--muted); margin-top:4px;">MajereAI Studio, Grimstad · Vi viser feilen. Vi gir fiksen. Vi har bygget produktet. Pengene kommer etterpå.</div>
     </div>
-    <a href="#bestill" class="btn btn-green" style="padding:9px 16px; font-size:13px;">Sett opp på aei.no →</a>
+    <a href="#kalkulator" class="btn btn-green" style="padding:9px 16px; font-size:13px;">Test kalkulatoren deres →</a>
+  </div>
+
+  <div class="card" style="border-color:#10b98188;">
+    <span class="badge">SLIK MARKEDSFØRER MAJEREAI SEG — OG SLIK JOBBER VI</span>
+    <h1 style="font-size:30px; line-height:1.2;">Vi bygger produktet deres før dere betaler. Rapporten ligger ikke bak en betalingsmur.</h1>
+    <p style="color:#cbd5e1; font-size:16px; margin-top:8px;">Andre ber om 490 kr for å fortelle dere at noe er galt. Vi gjør det motsatte, i denne rekkefølgen, på denne siden:</p>
+    <div class="grid2" style="margin-top:14px;">
+      <div style="border:1px solid #334155; border-radius:12px; padding:14px; background:#0b1120;">
+        <div style="font-size:12px; font-weight:800; color:#f87171;">1 · FEILEN FØRST</div>
+        <div style="font-weight:700; margin-top:4px;">Dere ser den konkrete feilen på aei.no før vi ber om noe.</div>
+      </div>
+      <div style="border:1px solid #334155; border-radius:12px; padding:14px; background:#0b1120;">
+        <div style="font-size:12px; font-weight:800; color:#34d399;">2 · FIKSEN GRATIS</div>
+        <div style="font-weight:700; margin-top:4px;">Kodefiksen er ferdig. Kopier den. Ingen registrering. Ingen faktura.</div>
+      </div>
+      <div style="border:1px solid #334155; border-radius:12px; padding:14px; background:#0b1120;">
+        <div style="font-size:12px; font-weight:800; color:#93c5fd;">3 · PRODUKTET ER ALLEREDE DERES</div>
+        <div style="font-weight:700; margin-top:4px;">Priskalkulatoren under er satt opp i Agder El Installasjon Arendal AS sitt navn, med deres tjenester og deres by. Test den nå.</div>
+      </div>
+      <div style="border:1px solid #334155; border-radius:12px; padding:14px; background:#0b1120;">
+        <div style="font-size:12px; font-weight:800; color:#fbbf24;">4 · PENGER ETTERPÅ</div>
+        <div style="font-weight:700; margin-top:4px;">Vil dere ha den på egen side: 0 kr på forskudd. Betal på faktura når den ligger der og virker.</div>
+      </div>
+    </div>
   </div>
 
   <div class="card">
-    <span style="color:#f87171; font-weight:800; font-size:13px;">DEL 1 (100 % GRATIS): TEKNISK SJEKK AV HTTPS://AEI.NO</span>
-    <h1>Vi fant 3 konkrete feil på aei.no — og skrev ferdig koden som fikser dem</h1>
+    <span style="color:#f87171; font-weight:800; font-size:13px;">1 · FEILEN PÅ HTTPS://AEI.NO — GRATIS Å LESE</span>
+    <h2>Dette er galt på siden deres. Ikke en generell rapport. Denne feilen.</h2>
     <p style="color:#fbbf24; font-weight:600; background:rgba(245,158,11,0.1); border-left:4px solid #f59e0b; padding:10px 14px; border-radius:6px;">
       ⚡ I Google står <title>-taggen på forsiden deres bokstavelig talt stavet feil som «Agder EI Installsjon» (med stor I i stedet for l i El, og uten a i Installasjon).
     </p>
@@ -89,7 +113,7 @@
     </ul>
     <div style="margin-top:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong style="color:#34d399; font-size:14px;">✅ Gratis kopi-klar kodefiks for Agder El Installasjon Arendal AS (klar til å limes rett inn i &lt;head&gt;):</strong>
+        <strong style="color:#34d399; font-size:14px;">2 · Fiksen er ferdig. Kopier den gratis. Den er skrevet for Agder El Installasjon Arendal AS, ikke en mal:</strong>
         <button onclick="navigator.clipboard.writeText(document.getElementById('codefix').innerText); this.innerText='✅ Kopiert!';" style="background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; border-radius:6px; padding:5px 10px; cursor:pointer; font-weight:700; font-size:12px;">📋 Kopier kodefiks gratis</button>
       </div>
       <pre id="codefix">&lt;!-- Ferdig optimalisert Google-tittel, Meta-beskrivelse og Schema.org LocalBusiness for Agder El Installasjon Arendal AS --&gt;
@@ -115,10 +139,10 @@
     </div>
   </div>
 
-  <div class="calc-box">
-    <span class="badge" style="background:#3b82f633; color:#93c5fd; border-color:#3b82f688;">DEL 2: TEST DERES EGEN INTERAKTIVE PRISKALKULATOR LIVE</span>
-    <h2 style="margin:10px 0 4px; font-size:22px;">Slik kan kundene i Arendal & Kristiansand bestille oppdrag direkte på aei.no på 60 sekunder</h2>
-    <p style="color:var(--muted); margin:0 0 14px; font-size:14px;">Prøv prototypen vi har satt opp med <b>Agder El Installasjon Arendal AS</b> sine tjenester under:</p>
+  <div class="calc-box" id="kalkulator">
+    <span class="badge" style="background:#3b82f633; color:#93c5fd; border-color:#3b82f688;">3 · PRODUKTET ER ALLEREDE BYGGET I DERES NAVN</span>
+    <h2 style="margin:10px 0 4px; font-size:22px;">Dette er ikke en demo av oss. Dette er Agder El Installasjon Arendal AS sin priskalkulator. Den finnes allerede.</h2>
+    <p style="color:var(--muted); margin:0 0 14px; font-size:14px;">Kundene i Arendal & Kristiansand kan prise et oppdrag på 60 sekunder. Prøv den. Ingen innlogging. Ingenting å betale for å se den.</p>
 
     <label>1. Velg ønsket oppdrag hos Agder El Installasjon Arendal AS:</label>
     <select id="srv" onchange="calc()">
@@ -148,8 +172,9 @@
   </div>
 
   <div class="card" id="bestill">
-    <h2 style="color:#34d399;">Vil dere at vi legger inn kodefiksen eller priskalkulatoren på aei.no for dere?</h2>
-    <p style="color:var(--muted); font-size:14px;">Dere betaler <b>0 kr på forskudd</b>. Vi utfører arbeidet og leverer først — deretter får dere vanlig bedriftsfaktura / Vipps (14 dagers betalingsfrist) når dere er 100 % fornøyde.</p>
+    <span style="color:#fbbf24; font-weight:800; font-size:13px;">4 · PENGER ETTERPÅ — BARE HVIS DERE VIL HA DEN PÅ EGEN SIDE</span>
+    <h2 style="color:#34d399;">Kodefiksen over er gratis uansett. Kalkulatoren over kan dere allerede teste. Betaling skjer først når vi har lagt den inn og den virker.</h2>
+    <p style="color:var(--muted); font-size:14px;"><b>0 kr på forskudd.</b> Vanlig bedriftsfaktura eller Vipps, 14 dagers frist, etter levering. Ikke før.</p>
     <div class="grid2" style="margin-top:16px;">
       <div style="border:1px solid #334155; border-radius:12px; padding:18px; background:#0b1120;">
         <div style="font-size:12px; font-weight:800; color:#38bdf8;">ALTERNATIV 1 · RASK TEKNISK FIKS</div>
