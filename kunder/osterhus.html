@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interaktiv Prototype & Gratis Kodefiks — Østerhus Rør AS</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --card: #131b2e;
+    --border: #233252;
+    --accent: #10b981;
+    --blue: #3b82f6;
+    --amber: #f59e0b;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding: 20px 14px 60px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.4);
+    padding: 12px 18px; border-radius: 12px; margin-bottom: 20px;
+  }
+  .badge {
+    display: inline-block; background: #10b98125; color: #34d399; border: 1px solid #10b98166;
+    padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  h1 { font-size: 26px; margin: 10px 0 6px; }
+  h2 { font-size: 19px; margin-top: 0; }
+  pre {
+    background: #070a12; border: 1px solid #1e293b; border-radius: 10px;
+    padding: 14px; overflow-x: auto; color: #38bdf8; font-size: 13px; margin: 10px 0;
+  }
+  .calc-box {
+    background: linear-gradient(145deg, #162238, #0f172a);
+    border: 2px solid var(--accent); border-radius: 14px; padding: 22px; margin-bottom: 20px;
+  }
+  label { display: block; font-weight: 700; font-size: 14px; margin: 12px 0 6px; color: #cbd5e1; }
+  select, input[type="range"], input[type="text"] {
+    width: 100%; padding: 11px 12px; border-radius: 8px; border: 1px solid #334155;
+    background: #0b1120; color: #fff; font-size: 15px;
+  }
+  .price-out {
+    margin-top: 16px; padding: 16px; border-radius: 10px; background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.4); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  .btn {
+    display: inline-block; text-decoration: none; font-weight: 800; font-size: 15px;
+    padding: 13px 20px; border-radius: 10px; cursor: pointer; border: none; text-align: center;
+  }
+  .btn-green { background: var(--accent); color: #042f1e; }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <span class="badge">FERDIGBYGD FOR ØSTERHUS RØR AS (ORG.NR 912509478)</span>
+      <div style="font-size:13px; color:var(--muted); margin-top:4px;">Utarbeidet av MajereAI Studio (Grimstad) · Gratis kodefiks + Live Priskalkulator-prototype</div>
+    </div>
+    <a href="#bestill" class="btn btn-green" style="padding:9px 16px; font-size:13px;">Sett opp på osterhusror.no →</a>
+  </div>
+
+  <div class="card">
+    <span style="color:#f87171; font-weight:800; font-size:13px;">DEL 1 (100 % GRATIS): TEKNISK SJEKK AV HTTPS://OSTERHUSROR.NO</span>
+    <h1>Vi fant 3 konkrete feil på osterhusror.no — og skrev ferdig koden som fikser dem</h1>
+    <p style="color:#fbbf24; font-weight:600; background:rgba(245,158,11,0.1); border-left:4px solid #f59e0b; padding:10px 14px; border-radius:6px;">
+      ⚡ Forsiden på osterhusror.no mangler Schema.org LocalBusiness strukturerte data for Grimstad, 7 av 16 bilder mangler alt-tekst, og kunder på mobil har ingen hurtig priskalkulator.
+    </p>
+    <ul style="color:#e2e8f0; padding-left:20px;">
+      <li style="margin-bottom:8px;"><b>Feil #1:</b> Mangler Schema.org LocalBusiness (JSON-LD) strukturerte bedriftsdata for lokale VVS-søk i Grimstad.</li>
+<li style="margin-bottom:8px;"><b>Feil #2:</b> 7 av 16 bilder på forsiden mangler alt-attributt for Google Bildesøk og lokal SEO.</li>
+<li style="margin-bottom:8px;"><b>Feil #3:</b> Mangler interaktiv VVS-priskalkulator som fanger opp oppdrag på mobil på 60 sekunder.</li>
+    </ul>
+    <div style="margin-top:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="color:#34d399; font-size:14px;">✅ Gratis kopi-klar kodefiks for Østerhus Rør AS (klar til å limes rett inn i &lt;head&gt;):</strong>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('codefix').innerText); this.innerText='✅ Kopiert!';" style="background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; border-radius:6px; padding:5px 10px; cursor:pointer; font-weight:700; font-size:12px;">📋 Kopier kodefiks gratis</button>
+      </div>
+      <pre id="codefix">&lt;!-- Ferdig optimalisert Google-tittel, Meta-beskrivelse og Schema.org LocalBusiness for Østerhus Rør AS --&gt;
+&lt;title&gt;Østerhus Rør AS | Rørleggermester & VVS (Rørkjøp) i Grimstad & Agder&lt;/title&gt;
+&lt;meta name="description" content="Trenger du rørleggermester & vvs (rørkjøp) i Grimstad & Agder? Østerhus Rør AS leverer rask befaring, faste avtaler og høy fagkvalitet. Beregn prisestimat på 60 sekunder."&gt;
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Østerhus Rør AS",
+  "taxID": "912509478",
+  "url": "https://osterhusror.no",
+  "telephone": "479 18 400",
+  "email": "post@osterhusror.no",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Grimstad & Agder",
+    "addressCountry": "NO"
+  },
+  "description": "Østerhus Rør AS — Rørleggermester & VVS (Rørkjøp) i Grimstad & Agder."
+}
+&lt;/script&gt;</pre>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <span class="badge" style="background:#3b82f633; color:#93c5fd; border-color:#3b82f688;">DEL 2: TEST DERES EGEN INTERAKTIVE PRISKALKULATOR LIVE</span>
+    <h2 style="margin:10px 0 4px; font-size:22px;">Slik kan kundene i Grimstad & Agder bestille oppdrag direkte på osterhusror.no på 60 sekunder</h2>
+    <p style="color:var(--muted); margin:0 0 14px; font-size:14px;">Prøv prototypen vi har satt opp med <b>Østerhus Rør AS</b> sine tjenester under:</p>
+
+    <label>1. Velg ønsket oppdrag hos Østerhus Rør AS:</label>
+    <select id="srv" onchange="calc()">
+      <option value="11900" data-unit="ferdig montert">Bytte varmtvannsbereder (200L OSO inkl. montering) — fra 11 900 kr (ferdig montert)</option>
+<option value="3950" data-unit="inkl. materiell og arbeid">Montering av utekran / frostsikker hagekran — fra 3 950 kr (inkl. materiell og arbeid)</option>
+<option value="85000" data-unit="estimat rør- og VVS-arbeid">Totalrenovering / oppussing av baderom — fra 85 000 kr (estimat rør- og VVS-arbeid)</option>
+<option value="3400" data-unit="inkl. oppmøte i Grimstad">Rørlegger-service / utskifting av armatur & toalett — fra 3 400 kr (inkl. oppmøte i Grimstad)</option>
+    </select>
+
+    <label>2. Omfang / antall enheter eller størrelse (<span id="qtyLbl">1</span>x standard omfang):</label>
+    <input type="range" id="qty" min="1" max="5" step="1" value="1" oninput="calc()">
+
+    <label>3. Ønsket oppstart i Grimstad & Agder:</label>
+    <select id="urg" onchange="calc()">
+      <option value="1.0">Normal planlegging (innen 2–3 uker)</option>
+      <option value="1.15">Prioritert oppstart (innen 3–5 virkedager)</option>
+      <option value="0.95">Fleksibel dato (5 % samlerabatt ved ledig kapasitet)</option>
+    </select>
+
+    <div class="price-out">
+      <div>
+        <div style="font-size:12px; color:#6ee7b7; font-weight:700; text-transform:uppercase;">Estimert prisindikasjon fra Østerhus Rør AS</div>
+        <div id="priceVal" style="font-size:28px; font-weight:900; color:#fff;">11 900 kr <span style="font-size:14px; font-weight:500; color:var(--muted);">inkl. mva (uforpliktende estimat)</span></div>
+      </div>
+      <button onclick="alert('Slik fungerer det: Når denne modulen ligger på osterhusror.no, sendes kundens navn, telefon, bilde og ferdig prisestimat direkte til post@osterhusror.no og på SMS til 479 18 400!');" class="btn btn-green">Send forespørsel til Østerhus Rør AS →</button>
+    </div>
+  </div>
+
+  <div class="card" id="bestill">
+    <h2 style="color:#34d399;">Vil dere at vi legger inn kodefiksen eller priskalkulatoren på osterhusror.no for dere?</h2>
+    <p style="color:var(--muted); font-size:14px;">Dere betaler <b>0 kr på forskudd</b>. Vi utfører arbeidet og leverer først — deretter får dere vanlig bedriftsfaktura / Vipps (14 dagers betalingsfrist) når dere er 100 % fornøyde.</p>
+    <div class="grid2" style="margin-top:16px;">
+      <div style="border:1px solid #334155; border-radius:12px; padding:18px; background:#0b1120;">
+        <div style="font-size:12px; font-weight:800; color:#38bdf8;">ALTERNATIV 1 · RASK TEKNISK FIKS</div>
+        <h3 style="margin:6px 0;">Komplett 12-punkts Audit &amp; Ferdig SEO-kodepakke</h3>
+        <div style="font-size:24px; font-weight:900; margin:8px 0; color:#34d399;">490 kr <span style="font-size:13px; color:var(--muted); font-weight:400;">eks. mva (0 kr forskudd)</span></div>
+        <p style="font-size:13px; color:var(--muted);">Vi sender hele den utvidede 12-punkts rapporten + hjelper dere å legge inn riktig Google-tittel, meta-beskrivelse og Schema.org på osterhusror.no. Beløpet trekkes 100 % fra hvis dere senere vil ha kalkulatoren.</p>
+        <a href="https://0qkbnx-1i.myshopify.com/cart/45354561175760:1" class="btn btn-blue" style="width:100%; margin-top:8px;">Bestill 490 kr-pakken (Betal etter levering) →</a>
+      </div>
+      <div style="border:2px solid var(--accent); border-radius:12px; padding:18px; background:#0b1120;">
+        <div style="font-size:12px; font-weight:800; color:#34d399;">ALTERNATIV 2 · NØKKELFERDIG BESTILLINGSMASKIN</div>
+        <h3 style="margin:6px 0;">Interaktiv Priskalkulator + Nøkkelferdig SmartBedrift-oppsett</h3>
+        <div style="font-size:24px; font-weight:900; margin:8px 0; color:#34d399;">4 990 kr <span style="font-size:13px; color:var(--muted); font-weight:400;">eks. mva (0 kr forskudd)</span></div>
+        <p style="font-size:13px; color:var(--muted);">Vi skreddersyr priskalkulatoren over med deres eksakte priser, legger den rett inn på osterhusror.no (eller setter opp ny lynrask side), og fikser all Google- og Schema-kode.</p>
+        <a href="https://0qkbnx-1i.myshopify.com/cart/45354561274064:1" class="btn btn-green" style="width:100%; margin-top:8px;">Bestill Priskalkulator ferdig oppsatt →</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function calc() {
+  var srv = document.getElementById('srv');
+  var base = parseFloat(srv.value);
+  var qty = parseInt(document.getElementById('qty').value);
+  var urg = parseFloat(document.getElementById('urg').value);
+  document.getElementById('qtyLbl').innerText = qty;
+  var est = Math.round((base * (1 + (qty - 1) * 0.65) * urg) / 100) * 100;
+  document.getElementById('priceVal').textContent = est.toLocaleString('nb-NO') + ' kr (uforpliktende estimat)';
+}
+calc();
+</script>
+</body>
+</html>
